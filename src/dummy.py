@@ -2,8 +2,8 @@ import os
 import gym
 import numpy as np
 from her.her import HER
-from stable_baselines import DDPG
-from stable_baselines.ddpg.policies import MlpPolicy
+from ddpg.ddpg import DDPG
+from ddpg.policies import MlpPolicy
 
 env = gym.make('FetchReach-v1')
 model = HER(MlpPolicy, env=env, model_class=DDPG)
