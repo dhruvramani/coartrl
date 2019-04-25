@@ -7,7 +7,7 @@ from stable_baselines.ddpg.policies import MlpPolicy
 
 env = gym.make('FetchReach-v1')
 model = HER(MlpPolicy, env=env, model_class=DDPG)
-mdoel.learn(total_timesteps=5000)
+model.learn(total_timesteps=5000)
 
 obs = env.reset()
 for i in range(100):
