@@ -211,7 +211,7 @@ def launch(env, logdir, n_epochs, num_cpu, seed, replay_strategy, policy_save_in
 @click.command()
 @click.option('--env', type=str, default='FetchReach-v1',
               help='the name of the OpenAI Gym environment that you want to train on')
-@click.option('--logdir', type=str, default="/home/nevronas/Projects/Personal-Projects/Dhruv/policies/",
+@click.option('--logdir', type=str, default="../../../policies/",
               help='the path to where logs and policy pickles should go. If not specified, creates a folder in /tmp/')
 @click.option('--n_epochs', type=int, default=50, help='the number of training epochs to run')
 @click.option('--num_cpu', type=int, default=1, help='the number of CPU cores to use (using MPI)')
