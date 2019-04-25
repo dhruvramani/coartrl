@@ -3,10 +3,10 @@ import gym
 import numpy as np
 from her.her import HER
 from stable_baselines import DDPG
-from stable_baselines.common.policies import MlpPolicy
+from stable_baselines.common.policies import DDPGPolicy
 
 env = gym.make('FetchReach-v1')
-model = HER(MlpPolicy, env=env, model_class=DDPG)
+model = HER(DDPGPolicy, env=env, model_class=DDPG)
 mdoel.learn(total_timesteps=5000)
 
 obs = env.reset()
