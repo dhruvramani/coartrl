@@ -121,7 +121,7 @@ class HER(BaseRLModel):
         observation = self._check_obs(observation)
         observation = tf.squeeze(observation)
         observation = tf.expand_dims(observation, 0)
-        return self.model.policy_tf.value(, action)
+        return self.model.policy_tf.value(observation, action)
 
     def predict(self, observation, state=None, mask=None, deterministic=True):
         return self.model.predict(self._check_obs(observation), state, mask, deterministic)
