@@ -117,6 +117,9 @@ class HER(BaseRLModel):
                 raise ValueError("You must either pass an env to HER or wrap your env using HERGoalEnvWrapper")
         return observation
 
+    def qvalue(self, observation, action):
+        return self.model.policy_tf.value(self._check_obs(observation), action)
+
     def predict(self, observation, state=None, mask=None, deterministic=True):
         return self.model.predict(self._check_obs(observation), state, mask, deterministic)
 
