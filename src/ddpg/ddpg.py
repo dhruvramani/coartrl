@@ -20,6 +20,14 @@ from stable_baselines.common.mpi_running_mean_std import RunningMeanStd
 from stable_baselines.a2c.utils import find_trainable_variables, total_episode_reward_logger
 from stable_baselines.deepq.replay_buffer import ReplayBuffer
 
+def kl_divergence(p, q):
+    # KL for continuous distributions
+    mean1, var1 = tf.nn.moments(p, axes=[1])
+    mean2, var2 = tf.nn.moments(q, axes=[1])
+    t1 = tf.log(var2 / var1)
+    t2 = (tf.square(var1) + tf.square(mean1 - mean2)) / (2 * tf.square(var2))
+
+    return t1 + t2 - 0.5
 
 def normalize(tensor, stats):
     """
@@ -852,13 +860,13 @@ class DDPG(OffPolicyRLModel):
                             new_obs, reward, done, info = self.env.step(action * np.abs(self.action_space.low))
 
                             if(coarticulation):
-                                act, _ = base_policy.predict(obs)
-                                Qst = base_policy.qvalue(obs, act)
+                                acto, _ = base_policy.predict(obs)
+                                Qst = base_policy.qvalue(obs, acto)
 
                                 act, _ = base_policy.predict(new_obs)
                                 Qst1 = base_policy.qvalue(new_obs, act)
 
-                                kloldnew = base_policy.model.policy_tf.proba_distribution.kl(self.policy_tf.proba_distribution)
+                                kloldnew = kl_divergence(acto, action)
                                 kl = tf.reduce_mean(kloldnew)
 
                                 reward = (Qst1 - Qst) + alpha * kl # TODO : Change KL here
