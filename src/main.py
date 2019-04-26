@@ -1,11 +1,9 @@
 import os
-import json
-import pickle
+import gym
 import numpy as np
-import stable_baslines
-import tensorflow as tf
-from her.ddpg import DDPG
-from her.experiment.train import train
+from her.her import HER
+from ddpg.ddpg import DDPG
+from stable_baselines.ddpg.policies import MlpPolicy
 
 _LOG_PATH = "../logs/"
 _ENV_NAME = "FetchReach-v1"
