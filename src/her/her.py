@@ -121,6 +121,7 @@ class HER(BaseRLModel):
     def qvalue(self, observation, action):
         observation = self._check_obs(observation)
         observation = np.reshape(observation, (1, observation.shape[0]))
+        action = np.reshape(action, (1,  action.shape[0]))
         return self.model.policy_tf.value(observation, action)
 
     def predict(self, observation, state=None, mask=None, deterministic=True):
