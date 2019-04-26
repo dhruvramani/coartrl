@@ -20,9 +20,6 @@ from stable_baselines.common.mpi_running_mean_std import RunningMeanStd
 from stable_baselines.a2c.utils import find_trainable_variables, total_episode_reward_logger
 from stable_baselines.deepq.replay_buffer import ReplayBuffer
 
-def kl(X, Y):
-    return 1
-    #return tf.reduce_sum(tf.nn.sigmoid_cross_entropy_with_logits(logits=X, labels=Y), axis=-1)
 
 def normalize(tensor, stats):
     """
@@ -861,7 +858,10 @@ class DDPG(OffPolicyRLModel):
                                 act, _ = base_policy.predict(new_obs)
                                 Qst1 = base_policy.qvalue(new_obs, act)
 
-                                reward = (Qst1 - Qst) + alpha * kl(action, act) # TODO : Change KL here
+                                kloldnew = base_policy.model.proba_distribution.kl(self.policy_tf.proba_distribution)
+                                kl = tf.reduce_mean(kloldnew)
+
+                                reward = (Qst1 - Qst) + alpha * kl # TODO : Change KL here
 
                             if writer is not None:
                                 ep_rew = np.array([reward]).reshape((1, -1))
