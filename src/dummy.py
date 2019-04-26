@@ -7,13 +7,13 @@ from stable_baselines.ddpg.policies import MlpPolicy
 
 
 env = gym.make('FetchReach-v1')
-model = HER(MlpPolicy, env=env, model_class=DDPG)
-model.learn(total_timesteps=1)
+#model = HER(MlpPolicy, env=env, model_class=DDPG)
+#model.learn(total_timesteps=10000)
 
 #model.save("../policies/dummy.pol")
 #del model
 
-model = HER.load("../policies/dummy.pol")
+model = HER.load(load_path="../policies/dummy.pol", env=env)
 
 obs = env.reset()
 for i in range(1000):

@@ -858,7 +858,7 @@ class DDPG(OffPolicyRLModel):
                                 act, _ = base_policy.predict(new_obs)
                                 Qst1 = base_policy.qvalue(new_obs, act)
 
-                                kloldnew = base_policy.model.proba_distribution.kl(self.policy_tf.proba_distribution)
+                                kloldnew = base_policy.model.policy_tf.proba_distribution.kl(self.policy_tf.proba_distribution)
                                 kl = tf.reduce_mean(kloldnew)
 
                                 reward = (Qst1 - Qst) + alpha * kl # TODO : Change KL here
