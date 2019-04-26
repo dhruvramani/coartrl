@@ -8,7 +8,7 @@ from stable_baselines.ddpg.policies import MlpPolicy
 
 env = gym.make('FetchReach-v1')
 model = HER(MlpPolicy, env=env, model_class=DDPG)
-model.learn(total_timesteps=100)
+model.learn(total_timesteps=10000)
 
 #model.save("../policies/dummy.pol")
 #del model
