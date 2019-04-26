@@ -18,6 +18,8 @@ model.learn(total_timesteps=100)
 obs = env.reset()
 for i in range(10):
     action, _states = model.predict(obs)
+    print(obs, action)
+    _ = input(" ")
     qvalue = model.model.policy_tf.value(obs, action)
     print(action, qvalue)
     obs, rewards, done, _ = env.step(action)
