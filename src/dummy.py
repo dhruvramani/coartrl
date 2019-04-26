@@ -10,10 +10,10 @@ env = gym.make('FetchReach-v1')
 model = HER(MlpPolicy, env=env, model_class=DDPG)
 model.learn(total_timesteps=100)
 
-model.save("../policies/dummy.pol")
-del model
+#model.save("../policies/dummy.pol")
+#del model
 
-model = DDPG.load("../policies/dummy.pol")
+#model = DDPG.load("../policies/dummy.pol")
 
 obs = env.reset()
 for i in range(10):
