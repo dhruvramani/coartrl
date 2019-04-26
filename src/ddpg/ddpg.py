@@ -20,6 +20,9 @@ from stable_baselines.common.mpi_running_mean_std import RunningMeanStd
 from stable_baselines.a2c.utils import find_trainable_variables, total_episode_reward_logger
 from stable_baselines.deepq.replay_buffer import ReplayBuffer
 
+def kl(X, Y):
+    return 1
+    #return tf.reduce_sum(tf.nn.sigmoid_cross_entropy_with_logits(logits=X, labels=Y), axis=-1)
 
 def normalize(tensor, stats):
     """
@@ -784,7 +787,7 @@ class DDPG(OffPolicyRLModel):
             })
 
     def learn(self, total_timesteps, callback=None, seed=None, log_interval=100, tb_log_name="DDPG",
-              reset_num_timesteps=True, replay_wrapper=None):
+              reset_num_timesteps=True, replay_wrapper=None, coarticulation=False, base_policy=None, alpha=0):
 
         new_tb_log = self._init_num_timesteps(reset_num_timesteps)
 
@@ -850,6 +853,15 @@ class DDPG(OffPolicyRLModel):
                             if rank == 0 and self.render:
                                 self.env.render()
                             new_obs, reward, done, info = self.env.step(action * np.abs(self.action_space.low))
+
+                            if(coarticulation):
+                                act, _ = base_policy.predict(obs)
+                                Qst = base_policy.qvalue(obs, act)
+
+                                act, _ = base_policy.predict(new_obs)
+                                Qst1 = base_policy.qvalue(new_obs, act)
+
+                                reward = (Qst1 - Qst) + alpha * kl(action, act) # TODO : Change KL here
 
                             if writer is not None:
                                 ep_rew = np.array([reward]).reshape((1, -1))

@@ -22,12 +22,13 @@ class HER(BaseRLModel):
     :param goal_selection_strategy: (GoalSelectionStrategy or str)
     """
 
-    def __init__(self, policy, env, model_class, n_sampled_goal=4,
+    def __init__(self, policy, env, model_class, coarticulation=False, n_sampled_goal=4,
                  goal_selection_strategy='future', *args, **kwargs):
 
         super().__init__(policy=policy, env=env, verbose=kwargs.get('verbose', 0),
                          policy_base=None, requires_vec_env=False)
 
+        self.coarticulation = coarticulation
         self.model_class = model_class
         self.replay_wrapper = None
 
@@ -62,10 +63,12 @@ class HER(BaseRLModel):
         # TODO: support VecEnv
         # assert isinstance(self.env, gym.GoalEnv), "HER only supports gym.GoalEnv"
 
+        # NOTE : Reward doesn't change as per the goal when coarticulation is true 
+        # - basically acts like a normal DDPG with env processing capabilities
         self.replay_wrapper = functools.partial(HindsightExperienceReplayWrapper,
                                                 n_sampled_goal=self.n_sampled_goal,
                                                 goal_selection_strategy=self.goal_selection_strategy,
-                                                wrapped_env=self.env)
+                                                wrapped_env=self.env, coarticulation=self.coarticulation)
 
     def set_env(self, env):
         # Unwrap VecEnv if needed
@@ -102,10 +105,10 @@ class HER(BaseRLModel):
         pass
 
     def learn(self, total_timesteps, callback=None, seed=None, log_interval=100, tb_log_name="HER",
-              reset_num_timesteps=True):
+              reset_num_timesteps=True, base_policy=None, alpha=0):
         return self.model.learn(total_timesteps, callback=callback, seed=seed, log_interval=log_interval,
                                 tb_log_name=tb_log_name, reset_num_timesteps=reset_num_timesteps,
-                                replay_wrapper=self.replay_wrapper)
+                                replay_wrapper=self.replay_wrapper, coarticulation=self.coarticulation, base_policy=base_policy, alpha=alpha)
 
     def _check_obs(self, observation):
         if isinstance(observation, dict):

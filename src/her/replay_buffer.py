@@ -46,7 +46,7 @@ class HindsightExperienceReplayWrapper(object):
         that enables to convert observation to dict, and vice versa
     """
 
-    def __init__(self, replay_buffer, n_sampled_goal, goal_selection_strategy, wrapped_env):
+    def __init__(self, replay_buffer, n_sampled_goal, goal_selection_strategy, wrapped_env, coarticulation=False):
         super(HindsightExperienceReplayWrapper, self).__init__()
 
         assert isinstance(goal_selection_strategy, GoalSelectionStrategy), "Invalid goal selection strategy," \
@@ -59,6 +59,7 @@ class HindsightExperienceReplayWrapper(object):
         # Buffer for storing transitions of the current episode
         self.episode_transitions = []
         self.replay_buffer = replay_buffer
+        self.coarticulation = coarticulation
 
     def append(self, obs_t, action, reward, obs_tp1, done):
         return self.add(obs_t, action, reward, obs_tp1, done)
@@ -146,6 +147,9 @@ class HindsightExperienceReplayWrapper(object):
             # Add to the replay buffer
             self.replay_buffer.add(obs_t, action, reward, obs_tp1, done)
 
+            # NOTE : If coarticulation is true - no need follow HER's subgoal sampling
+            if(self.coarticulation):
+                continue 
             # We cannot sample a goal from the future in the last step of an episode
             if (transition_idx == len(self.episode_transitions) - 1 and
                     self.goal_selection_strategy == GoalSelectionStrategy.FUTURE):
@@ -167,7 +171,8 @@ class HindsightExperienceReplayWrapper(object):
                 next_obs_dict['desired_goal'] = goal
 
                 # Update the reward according to the new desired goal
-                reward = self.env.compute_reward(goal, next_obs_dict['achieved_goal'], None)
+                if(not self.coarticulation): # NOTE : Just to be extra careful
+                    reward = self.env.compute_reward(goal, next_obs_dict['achieved_goal'], None)
                 # Can we ensure that done = reward == 0
                 done = False
 
