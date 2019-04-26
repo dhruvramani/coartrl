@@ -16,10 +16,12 @@ model.learn(total_timesteps=100)
 #model = DDPG.load("../policies/dummy.pol")
 
 obs = env.reset()
-for i in range(10):
-    #action, _states = model.predict(obs)
-    #qvalue = model.qvalue(obs, action)
-    action, qvalue = model.model._policy(obs)
+for i in range(100):
+    action, _states = model.predict(obs)
+    qvalue = model.qvalue(obs, action)
     print(action, qvalue)
     obs, rewards, done, _ = env.step(action)
+    print(done)
+    if(done == 1)
+        obs = env.reset()
     env.render()
