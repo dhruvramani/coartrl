@@ -22,6 +22,6 @@ for i in range(100):
     print(action, qvalue)
     obs, rewards, done, _ = env.step(action)
     print(done)
-    if(done == 1)
+    if(done == True):
         obs = env.reset()
     env.render()
