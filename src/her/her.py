@@ -1,7 +1,7 @@
 import functools
 
 import gym
-
+import tensorflow as tf
 from stable_baselines.common import BaseRLModel
 from stable_baselines.common import OffPolicyRLModel
 from stable_baselines.common.base_class import _UnvecWrapper
@@ -118,7 +118,10 @@ class HER(BaseRLModel):
         return observation
 
     def qvalue(self, observation, action):
-        return self.model.policy_tf.value(self._check_obs(observation), action)
+        observation = self._check_obs(observation)
+        observation = tf.squeeze(observation)
+        observation = tf.expand_dims(observation, 0)
+        return self.model.policy_tf.value(, action)
 
     def predict(self, observation, state=None, mask=None, deterministic=True):
         return self.model.predict(self._check_obs(observation), state, mask, deterministic)
