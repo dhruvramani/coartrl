@@ -1,6 +1,7 @@
 import functools
 
 import gym
+import numpy as np
 import tensorflow as tf
 from stable_baselines.common import BaseRLModel
 from stable_baselines.common import OffPolicyRLModel
@@ -119,8 +120,7 @@ class HER(BaseRLModel):
 
     def qvalue(self, observation, action):
         observation = self._check_obs(observation)
-        observation = tf.squeeze(observation)
-        observation = tf.expand_dims(observation, 0)
+        observation = np.reshape(observation, (1, observation.shape[0]))
         return self.model.policy_tf.value(observation, action)
 
     def predict(self, observation, state=None, mask=None, deterministic=True):
