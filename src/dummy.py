@@ -3,15 +3,16 @@ import gym
 import numpy as np
 from her.her import HER
 from ddpg.ddpg import DDPG
-from stable_baselines.ddpg.policies import MlpPolicy
+from stable_baselines import SAC
+from stable_baselines.common.policies import ActorCriticPolicy
 
 
 env = gym.make('FetchReach-v1')
-#model = HER(MlpPolicy, env=env, model_class=DDPG)
-#model.learn(total_timesteps=10000)
+model = HER(ActorCriticPolicy, env=env, model_class=SAC)
+model.learn(total_timesteps=10000)
 
-#model.save("../policies/dummy.pol")
-#del model
+model.save("../policies/dummy.pol")
+del model
 
 model = HER.load(load_path="../policies/dummy.pol", env=env)
 
