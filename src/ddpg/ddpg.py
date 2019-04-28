@@ -871,7 +871,7 @@ class DDPG(OffPolicyRLModel):
                                 Qst1 = base_policy.qvalue(new_obs, act)
 
                                 kloldnew = kl_divergence(acto, action)
-                                kl = tf.reduce_mean(kloldnew)
+                                kl = 0 #tf.reduce_mean(kloldnew)
 
                                 reward = (Qst1 - Qst) + kl # TODO : Change KL here
 
