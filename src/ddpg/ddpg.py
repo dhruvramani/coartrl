@@ -22,6 +22,8 @@ from stable_baselines.deepq.replay_buffer import ReplayBuffer
 
 def kl_divergence(p, q):
     # KL for continuous distributions
+    #TODO : CHANGE!
+    return 0
     mean1, var1 = tf.nn.moments(p, axes=[1])
     mean2, var2 = tf.nn.moments(q, axes=[1])
     t1 = tf.log(var2 / var1)
