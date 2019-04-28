@@ -873,7 +873,7 @@ class DDPG(OffPolicyRLModel):
                                 kloldnew = kl_divergence(acto, action)
                                 kl = tf.reduce_mean(kloldnew)
 
-                                reward = (Qst1 - Qst) + ALPHA * kl # TODO : Change KL here
+                                reward = (Qst1 - Qst) + kl # TODO : Change KL here
 
                             if writer is not None:
                                 ep_rew = np.array([reward]).reshape((1, -1))
