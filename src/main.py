@@ -9,7 +9,7 @@ from stable_baselines.ddpg.policies import MlpPolicy
 
 parser = argparse.ArgumentParser('Deep Coarticulation')
 parser.add_argument("-ne", "--no_episodes", type=int, default=10000)
-parser.add_argument("-ts", "--timesteps", type=int, default=10000)
+parser.add_argument("-ts", "--timesteps", type=int, default=100)
 parser.add_argument("-re", "--render", type=int, default=1)
 parser.add_argument("-ap", "--alpha", type=float, default=0.8)
 parser.add_argument("--resume", type=int, default=0)
