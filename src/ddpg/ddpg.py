@@ -20,6 +20,8 @@ from stable_baselines.common.mpi_running_mean_std import RunningMeanStd
 from stable_baselines.a2c.utils import find_trainable_variables, total_episode_reward_logger
 from stable_baselines.deepq.replay_buffer import ReplayBuffer
 
+ALPHA = 0.8
+
 def kl_divergence(p, q):
     # KL for continuous distributions
     #TODO : CHANGE!
@@ -794,7 +796,7 @@ class DDPG(OffPolicyRLModel):
             })
 
     def learn(self, total_timesteps, callback=None, seed=None, log_interval=100, tb_log_name="DDPG",
-              reset_num_timesteps=True, replay_wrapper=None, coarticulation=False, base_policy=None, alpha=0):
+              reset_num_timesteps=True, replay_wrapper=None, coarticulation=False, base_policy=None):
 
         new_tb_log = self._init_num_timesteps(reset_num_timesteps)
 
@@ -871,7 +873,7 @@ class DDPG(OffPolicyRLModel):
                                 kloldnew = kl_divergence(acto, action)
                                 kl = tf.reduce_mean(kloldnew)
 
-                                reward = (Qst1 - Qst) + alpha * kl # TODO : Change KL here
+                                reward = (Qst1 - Qst) + ALPHA * kl # TODO : Change KL here
 
                             if writer is not None:
                                 ep_rew = np.array([reward]).reshape((1, -1))

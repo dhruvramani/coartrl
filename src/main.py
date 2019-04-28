@@ -11,7 +11,7 @@ parser = argparse.ArgumentParser('Deep Coarticulation')
 parser.add_argument("-ne", "--no_episodes", type=int, default=10000)
 parser.add_argument("-ts", "--timesteps", type=int, default=100)
 parser.add_argument("-re", "--render", type=int, default=1)
-parser.add_argument("-ap", "--alpha", type=float, default=0.8)
+#parser.add_argument("-ap", "--alpha", type=float, default=0.8)
 parser.add_argument("--resume", type=int, default=0)
 parser.add_argument("--policy_dir", default="../policies/")
 parser.add_argument("--log_dir", default="../logs/")
@@ -71,7 +71,7 @@ def coarticulation(env_name, policy_n, pol_no):
     # NOTE : When coarticulation is set true, HER acts like normal DDPG
     #        and reward is computed as per the coarticulation algo.
     
-    newpolicy.learn(total_timesteps=args.timesteps, base_policy=policy_n, alpha=args.alpha)
+    newpolicy.learn(total_timesteps=args.timesteps, base_policy=policy_n)
     newpolicy.save(os.path.join(args.policy_dir, "newsubpl_{}.pol".format(pol_no)))
     return newpolicy
 
