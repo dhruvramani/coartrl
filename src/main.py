@@ -35,7 +35,7 @@ def test_subpolicy(env_name, her_model):
     env = gym.make(env_name)
     obs = env.reset()
     print("Generating SubPolicies")
-    for t in range(timesteps):
+    for t in range(args.timesteps):
         action, _states = her_model.predict(obs)
         qvalue = her_model.qvalue(obs, action)
         #print(action, qvalue)
