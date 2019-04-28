@@ -30,14 +30,10 @@ def train_her(env_name):
     model.save(os.path.join(args.policy_dir, "HER_{}.pol".format(env_name)))
     return model
 
-'''
-def generate_subpolicies(her_model):
-    # TODO : Run train step for every episode to make subpolicies different - or should I?
-    #        Can put this code within the model.learn code ?
-    # Based on the semi-trained HER model, 
-    # store model after every episode as a subpolicy
+
+def test_subpolicy(env_name, her_model):
+    env = gym.make(env_name)
     obs = env.reset()
-    count = 0
     print("Generating SubPolicies")
     for t in range(5000):
         action, _states = her_model.predict(obs)
@@ -45,11 +41,8 @@ def generate_subpolicies(her_model):
         #print(action, qvalue)
         obs, rewards, done, _ = env.step(action)
         if(done == True):
-            her_model.save(os.path.join(args.policy_dir, "subpl_{}.pol".format(count)))
-            print("{} done".format(count))
-            count += 1
             obs = env.reset()
-        env.render() '''
+        env.render() 
 
 def load_subpolicies(num=(20, 30)):
     subpolicies = []
@@ -79,6 +72,7 @@ def main():
     subpolicies = []
     for env_name in env_names:
         subpolicies.append(train_her(env_name))
+        test_subpolicy(env_name, subpolicies[-1])
 
     newpolicy = coarticulation(env_names[-2], subpolicies[-2], 1)
     '''
