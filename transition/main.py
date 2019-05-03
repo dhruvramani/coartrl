@@ -1,3 +1,5 @@
+# @Manan - search for NOTE - for Coariculation code 
+
 import sys
 import os
 import os.path as osp
@@ -9,6 +11,7 @@ import cv2  # Should be here for rollouts.py
 from mpi4py import MPI
 import tensorflow as tf
 import h5py
+import pickle
 
 import baselines.common.tf_util as U
 from baselines.common import set_global_seeds
@@ -17,13 +20,71 @@ from baselines.common.atari_wrappers import TransitionEnvWrapper
 
 from rl.meta_policy import MetaPolicy
 from rl.primitive_policy import PrimitivePolicy
-from rl.mlp_policy import MlpPolicy
-from rl.transition_policy import TransitionPolicy
-from rl.proximity_predictor import ProximityPredictor
+#from rl.mlp_policy import MlpPolicy
+#from rl.transition_policy import TransitionPolicy
+#from rl.proximity_predictor import ProximityPredictor
 from rl.config import argparser
 from rl.util import make_env
 import rl.rollouts as rollouts
 
+# NOTE : Run main code in the original transition repo (from my fork plis) and save meta_pi, primitive_pis explicity as pickle files
+#       Here, in the `coariculation_main` code we load them, find the order of primitives using meta policy
+#       And - modify the primitives using `coariculation` algorithm.
+#       See how to use environments from run function (esp. `config.primitive_envs`)
+
+def run_coarticulation(env, primitive_policy, config):
+    ob = env.reset()
+    primitive_env_name = primitive_policy.ob_env_name
+    new_policy = PrimitivePolicy(name="%s/coartpi" % primitive_env_name, env=env, ob_env_name=primitive_env_name, config=config)
+    
+    observations, rewards = [], []
+    n_episodes, max_primitive_t = 0, 0 # Hyperparam
+    for ep in n_episodes:
+        t_primitive, done = 0, False
+        while not done and t_primitive < max_primitive_t :
+            ac_t, v_t = primitive_policy.act(ob, stochastic=False) # NOTE : Currently using vpred, can change to Q
+            observations.append(ob)
+            ob, rew, done, info = env.step(ac_t)
+            ac_t1, v_t1 = primitive_policy.act(ob, stochastic=False)
+
+            reward =  (v_t1 - v_t) + 0 # NOTE : Put KL here instead of 0
+            rewards.append(reward)
+    # TODO : Update using some policy gradient algo
+    #        Something like 98 in trainer.py        
+    return new_policy
+
+
+def coariculation_main(env, meta_pi_path, primitives_path, config):
+    ob = env.reset()
+    meta_pi = pickle.load(meta_pi_path)
+    primitives_pis = []
+    num_primitives = len(config.primitive_envs)
+    for i in range(num_primitives):
+        primitive_i = pickle.load(primitives_path[i])
+        primitives_pis.append(primitive_i)
+    
+    cur_primitive = -1
+    primitive_order = []
+    while True: # NOTE - Change this, keep fixed number of steps  
+        # meta policy
+        prev_primitive = cur_primitive
+        cur_primitive, meta_vpred = meta_pi.act(ob, np.array([prev_primitive], stochastic))
+        primitive_order.append(cur_primitive)
+
+        t_primitive, done = 0, False
+        while not done and t_primitive < config.meta_duration:  
+            ac, vpred = primitive_pis[cur_primitive].act(ob, stochastic=False)
+
+            vob = render_frame(env, cur_ep_len, cur_ep_ret, meta_pi.primitive_names[cur_primitive],
+                               config.render, config.record, caption_off=config.video_caption_off)
+
+            ob, rew, done, info = env.step(ac)
+        ob = env.reset()
+        done = False
+        cur_primitive = -1
+
+    for i in primitive_order:
+        primitive_pis[i] = run_coarticulation(env, primitive_pis[i])
 
 def load_buffers(proximity_predictors, ckpt_path):
     if proximity_predictors:
@@ -43,7 +104,7 @@ def load_buffers(proximity_predictors, ckpt_path):
         else:
             logger.warn('No buffers are available at {}'.format(buffer_path))
 
-
+# Might not need to run this, just need the environment and stuff
 def run(config):
     sess = U.single_threaded_session(gpu=False)
     sess.__enter__()
@@ -103,8 +164,9 @@ def run(config):
                 config=config)
             for primitive_env_name in config.primitive_envs]
 
+        '''
         trans_pis, trans_oldpis = None, None
-        if config.use_trans:
+        if config.use_trans: # NOTE : COART - set to false
             trans_pis = [
                 TransitionPolicy(
                     name="%s/transition_pi" % primitive_env_name,
@@ -125,11 +187,14 @@ def run(config):
                 for primitive_env_name in config.primitive_envs]
             networks.extend(trans_pis)
             networks.extend(trans_oldpis)
+        '''
+
         networks.append(meta_pi)
         networks.append(meta_oldpi)
         networks.extend(primitive_pis)
 
         # build proximity_predictor
+        '''
         proximity_predictors = None
         if config.use_proximity_predictor:
             portion_start = [float(v) for v in config.proximity_use_traj_portion_start]
@@ -152,13 +217,14 @@ def run(config):
                 ) for primitive_env_name, path, portion_start, portion_end in \
                 zip(config.primitive_envs, config.primitive_paths, portion_start, portion_end)]
             networks.extend(proximity_predictors)
-
+        '''
+        '''
         # build trainer
         from rl.trainer import Trainer
         trainer = Trainer(env, meta_pi, meta_oldpi,
                           proximity_predictors, num_primitives,
                           trans_pis, trans_oldpis, config)
-
+        '''
         # build rollout
         rollout = rollouts.traj_segment_generator(
             # stochastic=config.is_train, config=config)
@@ -166,6 +232,7 @@ def run(config):
             stochastic=True, config=config,
             proximity_predictors=proximity_predictors,
         )
+    '''
     else:
         # build vanilla TRPO
         policy = MlpPolicy(
@@ -189,7 +256,7 @@ def run(config):
         rollout = rollouts.traj_segment_generator_rl(
             # env, policy, stochastic=config.is_train, config=config)
             env, policy, stochastic=not config.is_collect_state, config=config)
-
+    '''
     # initialize models
     def load_model(load_model_path, var_list=None):
         if os.path.isdir(load_model_path):
@@ -219,13 +286,15 @@ def run(config):
 
     if config.load_model_path is not None:
         # Load all the network
+        '''
         if config.is_train:
             ckpt_path = load_model(config.load_model_path)
             if config.hrl:
                 load_buffers(proximity_predictors, ckpt_path)
-        else:
-            ckpt_path = load_model(config.load_model_path, var_list)
+        else: '''
+        ckpt_path = load_model(config.load_model_path, var_list)
         logger.info('* Load all policies from checkpoint: {}'.format(ckpt_path))
+
     elif config.is_train:
         ckpt_path = tf.train.latest_checkpoint(config.log_dir)
         if config.hrl:
@@ -233,6 +302,7 @@ def run(config):
                 ckpt_path = load_model(ckpt_path)
                 load_buffers(proximity_predictors, ckpt_path)
             else:
+                # NOTE : Coart - might need this
                 # Only load the primitives
                 for (primitive_name, primitive_pi) in zip(config.primitive_paths, primitive_pis):
                     var_list = primitive_pi.get_variables()
@@ -251,13 +321,18 @@ def run(config):
         ckpt_path = load_model(config.log_dir, var_list)
         logger.info("* Load all policies from checkpoint: {}".format(ckpt_path))
 
+    '''
     if config.is_train:
         trainer.train(rollout)
     else:
+
         if config.evaluate_proximity_predictor:
             trainer.evaluate_proximity_predictor(var_list)
         else:
             trainer.evaluate(rollout, ckpt_num=ckpt_path.split('/')[-1])
+    '''
+
+    # NOTE : All Coart code goes here!
 
     env.close()
 

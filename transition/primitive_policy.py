@@ -29,6 +29,7 @@ class PrimitivePolicy(object):
         self._include_acc = config.primitive_include_acc
 
         # properties
+        self.ob_env_name = ob_env_name
         primitive_env = make_env(ob_env_name, config)
         self.hard_coded = primitive_env.hard_coded
         self._ob_shape = primitive_env.ob_shape
