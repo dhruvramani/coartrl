@@ -27,7 +27,7 @@ from rl.config import argparser
 from rl.util import make_env
 import rl.rollouts as rollouts
 
-# NOTE : Run main code in the original transition repo (from my fork plis) and save meta_pi, primitive_pis explicity as pickle files
+# NOTE : Run main code in the transition repo (FROM MY FORK PLEASE! - I included saving scripts) and save meta_pi, primitive_pis explicity as pickle files
 #       Here, in the `coariculation_main` code we load them, find the order of primitives using meta policy
 #       And - modify the primitives using `coariculation` algorithm.
 #       See how to use environments from run function (esp. `config.primitive_envs`)
@@ -50,21 +50,25 @@ def run_coarticulation(env, primitive_policy, config):
             reward =  (v_t1 - v_t) + 0 # NOTE : Put KL here instead of 0
             rewards.append(reward)
     # TODO : Update using some policy gradient algo
-    #        Something like 98 in trainer.py        
+    #        Something like 98 in trainer.py  
+
     return new_policy
 
 
-def coariculation_main(env, meta_pi_path, primitives_path, config):
+def coariculation_main(env, config):
+    meta_pi_path = "../policies/meta_policy.pol"
     ob = env.reset()
-    meta_pi = pickle.load(meta_pi_path)
+    meta_pi = pickle.load(open(meta_pi_path, "rb"))
     primitives_pis = []
     num_primitives = len(config.primitive_envs)
     for i in range(num_primitives):
-        primitive_i = pickle.load(primitives_path[i])
+        primitives_path = "../policies/primitive_{}.pol".format(i)
+        primitive_i = pickle.load(open(primitives_path, "rb"))
         primitives_pis.append(primitive_i)
     
     cur_primitive = -1
     primitive_order = []
+    # NOTE : To get the order in which we want to run the subpolicies
     while True: # NOTE - Change this, keep fixed number of steps  
         # meta policy
         prev_primitive = cur_primitive
@@ -83,8 +87,14 @@ def coariculation_main(env, meta_pi_path, primitives_path, config):
         done = False
         cur_primitive = -1
 
-    for i in primitive_order:
-        primitive_pis[i] = run_coarticulation(env, primitive_pis[i])
+    with open("../policies/primitive_order.txt", "w+") as f:
+        for i in primitive_order:
+            primitive_pis[i] = run_coarticulation(env, primitive_pis[i])
+            f.write("{}\n".format(i))
+
+    for i in range(len(primitive_pis)):
+        with open("../policies/coart_primitive_{}.pol".format(i), "wb") as f:
+            pickle.dump(primitive_pis[i], f)
 
 def load_buffers(proximity_predictors, ckpt_path):
     if proximity_predictors:
