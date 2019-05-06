@@ -51,6 +51,7 @@ def run_coarticulation(env, primitive_policy, config):
             rewards.append(reward)
     # TODO : Update using some policy gradient algo
     #        Something like 98 in trainer.py  
+    #        OR - something from SpinningUp / baselines / stable-baseline
 
     return new_policy
 
