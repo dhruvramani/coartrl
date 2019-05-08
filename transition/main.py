@@ -35,6 +35,7 @@ import rl.rollouts as rollouts
 def run_coarticulation(env, primitive_policy, config):
     ob = env.reset()
     primitive_env_name = primitive_policy.ob_env_name
+    # NOTE : Can put stable-baseline / other standard policy here to train
     new_policy = PrimitivePolicy(name="%s/coartpi" % primitive_env_name, env=env, ob_env_name=primitive_env_name, config=config)
     
     observations, rewards = [], []
@@ -96,6 +97,8 @@ def coariculation_main(env, config):
     for i in range(len(primitive_pis)):
         with open("../policies/coart_primitive_{}.pol".format(i), "wb") as f:
             pickle.dump(primitive_pis[i], f)
+
+# NOTE : Ones the pickle objects are available, might not need the code below
 
 def load_buffers(proximity_predictors, ckpt_path):
     if proximity_predictors:
