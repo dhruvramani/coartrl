@@ -16,7 +16,7 @@ def argparser():
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
     # environment
-    parser.add_argument('--env', help='environment ID', type=str, default='Walker2dForward-v1')
+    parser.add_argument('--env', help='environment ID', type=str, default='JacoToss-v1')
     parser.add_argument('--env_args', type=str, default=None, help='(optional) arguments for environment')
 
     # architecture (rl or hrl)
@@ -94,11 +94,11 @@ def argparser():
     parser.add_argument('--proximity_max_grad_norm', type=float, default=10.0)
 
     # primitive skills
-    parser.add_argument('--primitive_envs', type=str2list, default=None, help='Separated list \
+    parser.add_argument('--primitive_envs', type=str2list, default="JacoToss-v1,JacoHit-v1", help='Separated list \
                         of primitive envs eg. JacoToss-v1,JacoHit-v1')
     parser.add_argument('--primitive_dir', type=str, default='./log',
                         help='Directory where primitives are located')
-    parser.add_argument('--primitive_paths', type=str2list, default=None, help='Separated list \
+    parser.add_argument('--primitive_paths', type=str2list, default="JacoToss.toss_ICLR2019,JacoHit.hit_ICLR2019", help='Separated list \
                         of model names inside primitive_dir loaded in order with primitive_envs \
                         eg. JacoToss.ICLR2019,JacoHit.ICLR2019')
     parser.add_argument('--primitive_num_hid_layers', type=int, default=2)

@@ -113,7 +113,7 @@ class PrimitivePolicy(object):
         ac = U.switch(stochastic, self.pd.sample(), self.pd.mode())
         self.obs = [self._obs[ob_name] for ob_name in self.ob_type]
         self._act = U.function([stochastic] + self.obs, [ac, self.vpred])
-        self._value = U.function(self.obs, self.vpred)
+        self._value = U.function([stochastic] + self.obs, self.vpred)
 
     def act(self, ob, stochastic):
         if self.hard_coded:
@@ -122,11 +122,11 @@ class PrimitivePolicy(object):
         ac, vpred = self._act(stochastic, *ob_list)
         return ac[0], vpred[0]
 
-    def value(self, ob):
+    def value(self, stochastic, ob):
         if self.hard_coded:
             return 0
         ob_list = self.get_ob_list(ob)
-        vpred = self._value(*ob_list)
+        vpred = self._value(stochastic, *ob_list)
         return vpred[0]
 
     def get_ob_dict(self, ob):

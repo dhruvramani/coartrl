@@ -45,6 +45,110 @@ class Rollout(object):
     def get(self):
         return self._history
 
+def traj_segment_generator_coart(env, pi, coart_pi, alpha, stochastic, config, training_inference=False):
+    t = 0
+    ac = env.action_space.sample()
+    done = False
+    rew = 0.0
+    ob = env.reset()
+
+    cur_ep_ret = 0
+    cur_ep_len = 0
+    ep_rets = []
+    ep_lens = []
+    ep_reward = defaultdict(list)
+
+    # Initialize history arrays
+    obs = []
+    visual_obs = []
+    acs = []
+    vpreds = []
+    rews = []
+    dones = []
+    reward_info = defaultdict(list)
+
+    if config.render:
+        cv2.namedWindow(env.spec.id)
+        cv2.moveWindow(env.spec.id, 0, 0)
+
+    while True:
+        ac, vpred = pi.act(ob, stochastic)
+
+        if t >= config.num_rollouts and config.is_train and not training_inference:
+            dicti = {"ob": obs, "rew": rews, "vpred": vpreds, "next_vpred": vpred * (1 - done),
+                     "done": dones, "ac": acs, "ep_reward": ep_rets, "ep_length": ep_lens}
+            for key, value in ep_reward.items():
+                dicti.update({"ep_{}".format(key): value})
+            yield {key: np.copy(val) for key, val in dicti.items()}
+            ep_rets = []
+            ep_lens = []
+            ep_reward = defaultdict(list)
+            obs = []
+            rews = []
+            vpreds = []
+            dones = []
+            acs = []
+            t = 0
+            vpred = pi.value(stochastic, ob)
+
+        obs.append(ob)
+        vpreds.append(vpred)
+        acs.append(ac)
+        vob = render_frame(
+            env, cur_ep_len, cur_ep_ret, config.rl_method, config.render,
+            config.record, caption_off=config.video_caption_off)
+        visual_obs.append(vob)
+
+        ob, rew, done, info = env.step(ac)
+        for key, value in info.items():
+            reward_info[key].append(value)
+
+        ac_1, vpred_1 = pi.act(ob, stochastic)
+        # NOTE : Coart main code here
+        rew = (vpred_1 - vpred) + alpha * pi.pd.kl(coart_pi.pd) 
+        
+        rews.append(rew)
+        dones.append(done)
+        cur_ep_ret += rew
+        cur_ep_len += 1
+        t += 1
+
+        if done:
+            vob = render_frame(
+                env, cur_ep_len, cur_ep_ret, config.rl_method, config.render,
+                config.record, caption_off=config.video_caption_off)
+            visual_obs.append(vob)  # add last frame
+            ep_rets.append(cur_ep_ret)
+            ep_lens.append(cur_ep_len)
+            for key, value in reward_info.items():
+                if isinstance(value[0], (int, float, np.bool_)):
+                    if '_mean' in key:
+                        ep_reward[key].append(np.mean(value))
+                    else:
+                        ep_reward[key].append(np.sum(value))
+
+            if not config.is_train or training_inference:
+                dicti = {"ep_reward": ep_rets, "ep_length": ep_lens, "visual_obs": visual_obs}
+                if config.is_collect_state:
+                    dicti["obs"] = obs
+                for key, value in ep_reward.items():
+                    dicti.update({"ep_{}".format(key): value})
+                yield {key: np.copy(val) for key, val in dicti.items()}
+                ep_rets = []
+                ep_lens = []
+                ep_reward = defaultdict(list)
+                obs = []
+                rews = []
+                vpreds = []
+                dones = []
+                acs = []
+                t = 0
+            reward_info = defaultdict(list)
+            cur_ep_ret = 0
+            cur_ep_len = 0
+            visual_obs = []
+            ob = env.reset()
+
 
 def traj_segment_generator(env, meta_pi, primitive_pis, trans_pis, stochastic, config,
                            training_inference=False, proximity_predictors=None):
