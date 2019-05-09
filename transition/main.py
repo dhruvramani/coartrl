@@ -45,7 +45,7 @@ def run_coarticulation(env, primitive_pi, config):
     rollout = Rollout()
     primitive_env_name = primitive_pi.ob_env_name
     coart_pi = PrimitivePolicy(name="%s/coartpi" % primitive_env_name, env=env, ob_env_name=primitive_env_name, config=config)
-    coart_oldpi = PrimitivePolicy(name="%s/coartpi" % primitive_env_name, env=env, ob_env_name=primitive_env_name, config=config)
+    coart_oldpi = PrimitivePolicy(name="%s/coart_oldpi" % primitive_env_name, env=env, ob_env_name=primitive_env_name, config=config)
 
     trainer = RLTrainer(env, coart_pi, coart_oldpi, config)
     for ep in n_episodes: # loop might be necessary
@@ -66,7 +66,7 @@ def run_coarticulation(env, primitive_pi, config):
     #         t_primitive += 1
 
     with open("../policies/coar_{}.pol".format(config.env), "wb") as f:
-            pickle.dump(coart_pi, f)
+        pickle.dump(coart_pi, f)
 
     return coart_pi
 
@@ -86,7 +86,6 @@ def coariculation_main(config):
     ob = env.reset()
     # NOTE : To get the order in which we want to run the subpolicies
     while True: # NOTE - Change this, keep fixed number of steps  
-        # meta policy
         prev_primitive = cur_primitive
         cur_primitive, meta_vpred = meta_pi.act(ob, np.array([prev_primitive], stochastic))
         primitive_order.append(cur_primitive)
@@ -111,7 +110,6 @@ def coariculation_main(config):
 
 def main():
     args = argparser()
-    logger.info('Launch process {}/{}'.format(MPI.COMM_WORLD.Get_rank(), MPI.COMM_WORLD.Get_size()))
     env_name = args.env.split('-')[0]
     if args.env_args is not None:
         env_name = '{}.{}.{}'.format(env_name,
