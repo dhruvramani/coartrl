@@ -16,7 +16,7 @@ def argparser():
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
     # environment
-    parser.add_argument('--env', help='environment ID', type=str, default='JacoToss-v1')
+    parser.add_argument('--env', help='environment ID', type=str, default='JacoServe-v1')
     parser.add_argument('--env_args', type=str, default=None, help='(optional) arguments for environment')
 
     # architecture (rl or hrl)
@@ -96,7 +96,7 @@ def argparser():
     # primitive skills
     parser.add_argument('--primitive_envs', type=str2list, default="JacoToss-v1,JacoHit-v1", help='Separated list \
                         of primitive envs eg. JacoToss-v1,JacoHit-v1')
-    parser.add_argument('--primitive_dir', type=str, default='../transition/log',
+    parser.add_argument('--primitive_dir', type=str, default='../../transition/log',
                         help='Directory where primitives are located')
     parser.add_argument('--primitive_paths', type=str2list, default="JacoToss.toss_ICLR2019,JacoHit.hit_ICLR2019", help='Separated list \
                         of model names inside primitive_dir loaded in order with primitive_envs \
