@@ -16,15 +16,14 @@ from baselines.common import set_global_seeds
 from baselines import logger
 from baselines.common.atari_wrappers import TransitionEnvWrapper
 
-from rl.meta_policy import MetaPolicy
-from rl.primitive_policy import PrimitivePolicy
-from rl.mlp_policy import MlpPolicy
-from rl.transition_policy import TransitionPolicy
-from rl.proximity_predictor import ProximityPredictor
-from rl.config import argparser
-from rl.util import make_env
-import rl.rollouts as rollouts
-
+from meta_policy import MetaPolicy
+from primitive_policy import PrimitivePolicy
+from mlp_policy import MlpPolicy
+from transition_policy import TransitionPolicy
+from proximity_predictor import ProximityPredictor
+from config import argparser
+from util import make_env
+import rollouts as rollouts
 
 def load_buffers(proximity_predictors, ckpt_path):
     if proximity_predictors:
