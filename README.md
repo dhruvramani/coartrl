@@ -17,7 +17,7 @@ python3 -m rl.main --prefix toss_ICLR2019 --env JacoToss-v1 --hrl False --num_ro
 python3 -m rl.main --prefix hit_ICLR2019 --env JacoHit-v1 --hrl False --num_rollouts 10000 --is_collect_state True --num_evaluation_run 1000 # Jaco Hit env
 ```
 
-All the policies will be saved as pickle files in `./policies`. To train and save the meta policy, run the following command on the clone. 
+To train and save the meta policy, run the following command on the clone. 
 
 ```
 python3 -m rl.main
