@@ -331,7 +331,7 @@ def run(config):
 
     if config.is_train:
         trainer.train(rollout)
-    else if(config.is_coart and config.hrl):
+    elif(config.is_coart and config.hrl):
         coariculation_main(env, meta_pi, primitive_pis, config)
     else:
         if config.evaluate_proximity_predictor:
