@@ -109,6 +109,7 @@ def coariculation_main(env, meta_pi, primitive_pis, config):
             #                   config.render, config.record, caption_off=config.video_caption_off)
 
             ob, rew, done, info = env.step(ac)
+            t_primitive += 1
         ob = env.reset()
         done = False
         cur_primitive = -1

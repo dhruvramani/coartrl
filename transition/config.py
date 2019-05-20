@@ -33,7 +33,7 @@ def argparser():
     parser.add_argument('--rl_fixed_var', type=str2bool, default=True)
 
     # meta policy
-    parser.add_argument('--meta_duration', type=int, default=30)
+    parser.add_argument('--meta_duration', type=int, default=10)
     parser.add_argument('--meta_oracle', type=str2bool, default=False)
     parser.add_argument('--meta_num_hid_layers', type=int, default=2)
     parser.add_argument('--meta_hid_size', type=int, default=32)
