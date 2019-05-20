@@ -45,7 +45,7 @@ def argparser():
     parser.add_argument('--meta_entcoeff', type=float, default=2e-4)
 
     # transition policy
-    parser.add_argument('--use_trans', type=str2bool, default=True)
+    parser.add_argument('--use_trans', type=str2bool, default=False)
     parser.add_argument('--use_trans_between_same_policy', type=str2bool, default=False)
     parser.add_argument('--trans_term_activation', type=str, default='softmax',
                         choices=['sigmoid', 'softmax'])
@@ -155,7 +155,7 @@ def argparser():
     parser.add_argument('--render', type=str2bool, default=False, help='Render frames')
     parser.add_argument('--record', type=str2bool, default=False, help='Record video')
     parser.add_argument('--video_prefix', type=str, default=None)
-    parser.add_argument('--log_dir', type=str, default='../../transition/log')
+    parser.add_argument('--log_dir', type=str, default='../logs')
     parser.add_argument('--seed', help='RNG seed', type=int, default=0)
     parser.add_argument('--debug', type=str2bool, default=False, help='See debugging info')
 
