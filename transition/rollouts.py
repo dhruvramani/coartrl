@@ -45,7 +45,7 @@ class Rollout(object):
     def get(self):
         return self._history
 
-def traj_segment_generator_coart(env, pi, coart_pi, alpha, stochastic, config, training_inference=False):
+def traj_segment_generator_coart(env, pi, coart_pi, alpha, stochastic, config, training_inference=True):
     t = 0
     ac = env.action_space.sample()
     done = False
@@ -74,7 +74,7 @@ def traj_segment_generator_coart(env, pi, coart_pi, alpha, stochastic, config, t
     while True:
         ac, vpred = pi.act(ob, stochastic)
 
-        if t >= config.num_rollouts and config.is_train and not training_inference:
+        if t >= config.num_rollouts : #and config.is_train and not training_inference:
             dicti = {"ob": obs, "rew": rews, "vpred": vpreds, "next_vpred": vpred * (1 - done),
                      "done": dones, "ac": acs, "ep_reward": ep_rets, "ep_length": ep_lens}
             for key, value in ep_reward.items():
@@ -126,7 +126,7 @@ def traj_segment_generator_coart(env, pi, coart_pi, alpha, stochastic, config, t
                         ep_reward[key].append(np.mean(value))
                     else:
                         ep_reward[key].append(np.sum(value))
-
+            '''
             if not config.is_train or training_inference:
                 dicti = {"ep_reward": ep_rets, "ep_length": ep_lens, "visual_obs": visual_obs}
                 if config.is_collect_state:
@@ -143,6 +143,7 @@ def traj_segment_generator_coart(env, pi, coart_pi, alpha, stochastic, config, t
                 dones = []
                 acs = []
                 t = 0
+            '''
             reward_info = defaultdict(list)
             cur_ep_ret = 0
             cur_ep_len = 0
