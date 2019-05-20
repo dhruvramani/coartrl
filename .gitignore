@@ -1,4 +1,6 @@
 # Byte-compiled / optimized / DLL files
+transition/baselines
+transition/gym
 logs/
 policies/
 __pycache__/
