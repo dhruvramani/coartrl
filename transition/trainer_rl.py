@@ -225,6 +225,8 @@ class RLTrainer(object):
             # rollout
             with self.timed("sampling"):
                 rolls = rollout.__next__()
+            print(rolls)
+            _ = input(" ")
             if config.rl_method == 'trpo':
                 rollouts.add_advantage_rl(rolls, 0.99, 0.98)
             elif config.rl_method == 'ppo':
