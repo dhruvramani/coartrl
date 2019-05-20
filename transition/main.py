@@ -46,7 +46,7 @@ def load_buffers(proximity_predictors, ckpt_path):
 
 
 # NOTE : Hyperparams for Coariculation
-n_episodes, max_primitive_t = 100, 1000 
+n_episodes, max_primitive_t = 10, 1000 # TODO change episodes to 100
 alpha = 0.1
 
 # NOTE : Run main code in the transition repo (FROM MY FORK PLEASE! - I included saving scripts) which saves meta_pi, primitive_pis explicity as pickle files
@@ -119,7 +119,7 @@ def coariculation_main(env, meta_pi, primitive_pis, config):
 
     with open("../policies/primitive_order.txt", "w+") as f:
         for i in primitive_order:
-            primitive_pis[i] = run_coarticulation(env, primitive_pis[i])
+            primitive_pis[i] = run_coarticulation(env, primitive_pis[i], config)
             f.write("{}\n".format(i))
 
     return primitive_pis
