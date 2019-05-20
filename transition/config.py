@@ -34,7 +34,7 @@ def argparser():
 
     # meta policy
     parser.add_argument('--meta_duration', type=int, default=30)
-    parser.add_argument('--meta_oracle', type=str2bool, default=True)
+    parser.add_argument('--meta_oracle', type=str2bool, default=False)
     parser.add_argument('--meta_num_hid_layers', type=int, default=2)
     parser.add_argument('--meta_hid_size', type=int, default=32)
     parser.add_argument('--meta_activation', type=str, default='tanh',
