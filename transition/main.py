@@ -98,7 +98,7 @@ def coariculation_main(env, meta_pi, primitives_pis, config):
     # NOTE : To get the order in which we want to run the subpolicies
     while True: # NOTE - Change this, keep fixed number of steps  
         prev_primitive = cur_primitive
-        cur_primitive, meta_vpred = meta_pi.act(ob, np.array([prev_primitive], stochastic))
+        cur_primitive, meta_vpred = meta_pi.act(ob, np.array([prev_primitive], stochastic=True))
         primitive_order.append(cur_primitive)
 
         t_primitive, done = 0, False
