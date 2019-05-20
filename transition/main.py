@@ -63,6 +63,8 @@ def run_coarticulation(env, primitive_pi, config):
     coart_pi = PrimitivePolicy(name="%s/coartpi" % primitive_env_name, env=env, ob_env_name=primitive_env_name, config=config)
     coart_oldpi = PrimitivePolicy(name="%s/coart_oldpi" % primitive_env_name, env=env, ob_env_name=primitive_env_name, config=config)
 
+    from trainer_rl import RLTrainer
+
     trainer = RLTrainer(env, coart_pi, coart_oldpi, config)
     for ep in n_episodes: # loop might be necessary
         rollout = rollouts.traj_segment_generator_coart(env, primitive_pi, coart_pi, alpha, stochastic=not config.is_collect_state, config=config)
@@ -230,7 +232,7 @@ def run(config):
             networks.extend(proximity_predictors)
 
         # build trainer
-        from rl.trainer import Trainer
+        from trainer import Trainer
         trainer = Trainer(env, meta_pi, meta_oldpi,
                           proximity_predictors, num_primitives,
                           trans_pis, trans_oldpis, config)
@@ -259,7 +261,7 @@ def run(config):
         networks.append(old_policy)
 
         # build trainer
-        from rl.trainer_rl import RLTrainer
+        from trainer_rl import RLTrainer
         trainer = RLTrainer(env, policy, old_policy, config)
         # build rollout
         rollout = rollouts.traj_segment_generator_rl(

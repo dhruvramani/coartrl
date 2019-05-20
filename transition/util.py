@@ -2,7 +2,6 @@ import logging
 
 from baselines.common.atari_wrappers import TransitionEnvWrapper
 
-
 def make_env(env_name, config=None):
     import gym
     env = gym.make(env_name)

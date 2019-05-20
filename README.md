@@ -29,6 +29,8 @@ The reward calculation (as per the coarticulation algorithm) is done in `rollout
 
 To run the code in this, 
 ```
+cp -r path_to_transition_clone/gym ./transition
+cp -r path_to_transition_clone/baselines ./transition
 cd transition
 python3 main.py
 ```
