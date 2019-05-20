@@ -101,7 +101,6 @@ class MetaPolicy(object):
         self._act = U.function([stochastic, self._prev_primitive] + self.obs, [ac, self.vpred])
 
     def act(self, ob, prev_primitive, stochastic):
-        stochastic = True
         ob_list = self.get_ob_list(ob)
         ac, vpred = self._act(stochastic, prev_primitive, *ob_list)
         return ac[0], vpred[0]
