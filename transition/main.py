@@ -90,7 +90,7 @@ def run_coarticulation(env, primitive_pi, config):
     return coart_pi
 
 
-def coariculation_main(env, meta_pi, primitives_pis, config):
+def coariculation_main(env, meta_pi, primitive_pis, config):
     primitive_order = []
     num_primitives, cur_primitive = len(config.primitive_envs), -1
 
