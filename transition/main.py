@@ -105,8 +105,8 @@ def coariculation_main(env, meta_pi, primitive_pis, config):
         while not done and t_primitive < config.meta_duration:  
             ac, vpred = primitive_pis[cur_primitive].act(ob, stochastic=False)
 
-            vob = rollouts.render_frame(env, cur_ep_len, cur_ep_ret, meta_pi.primitive_names[cur_primitive],
-                               config.render, config.record, caption_off=config.video_caption_off)
+            #vob = rollouts.render_frame(env, cur_ep_len, cur_ep_ret, meta_pi.primitive_names[cur_primitive],
+            #                   config.render, config.record, caption_off=config.video_caption_off)
 
             ob, rew, done, info = env.step(ac)
         ob = env.reset()
