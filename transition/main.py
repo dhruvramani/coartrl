@@ -67,10 +67,9 @@ def run_coarticulation(env, primitive_pi, config):
     from trainer_rl import RLTrainer
 
     trainer = RLTrainer(env, coart_pi, coart_oldpi, config)
-    for ep in range(n_episodes): # loop might be necessary
-        rollout = rollouts.traj_segment_generator_coart(env, primitive_pi, coart_pi, alpha, stochastic=not config.is_collect_state, config=config)
-        print(rollout)
-        trainer.train(rollout)
+    rollout = rollouts.traj_segment_generator_coart(env, primitive_pi, coart_pi, alpha, stochastic=not config.is_collect_state, config=config)
+    #for ep in range(n_episodes): # loop might be necessary
+    trainer.train(rollout)
 
     # NOTE : Old code, replaced this with rollout    
     # observations, rewards = [], []
