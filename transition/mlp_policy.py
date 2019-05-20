@@ -7,8 +7,8 @@ from baselines.common.distributions import make_pdtype
 from baselines.common.atari_wrappers import TransitionEnvWrapper
 import baselines.common.tf_util as U
 
-import rl.ops as ops
-from rl.util import make_env
+import ops as ops
+from util import make_env
 
 
 class MlpPolicy(object):

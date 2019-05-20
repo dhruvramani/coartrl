@@ -15,8 +15,8 @@ import baselines.common.tf_util as U
 from baselines.common.mpi_adam import MpiAdam
 from baselines.statistics import stats
 
-import rl.rollouts as rollouts
-from rl.dataset import Dataset
+import rollouts as rollouts
+from dataset import Dataset
 
 
 class Trainer(object):

@@ -11,8 +11,8 @@ from baselines import logger
 from baselines.common.mpi_running_mean_std import RunningMeanStd
 import baselines.common.tf_util as U
 
-from rl.ops import activation
-from rl.util import make_env
+from ops import activation
+from util import make_env
 
 
 class Replay(object):

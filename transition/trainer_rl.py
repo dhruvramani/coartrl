@@ -19,8 +19,8 @@ from baselines.common.mpi_adam import MpiAdam
 from baselines.common.cg import cg
 from baselines.statistics import stats
 
-import rl.rollouts as rollouts
-import rl.dataset as dataset
+import rollouts as rollouts
+import dataset as dataset
 
 
 class RLTrainer(object):
