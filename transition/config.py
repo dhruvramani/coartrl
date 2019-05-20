@@ -125,7 +125,7 @@ def argparser():
 
     # evalution
     parser.add_argument('--num_evaluation_run', type=int, default=10)
-    parser.add_argument('--evaluate_proximity_predictor', type=str2bool, default=False)
+    parser.add_argument('--evaluate_proximity_predictor', type=str2bool, default=True)
     parser.add_argument('--evaluate_all_ckpts', type=str2bool, default=False)
     parser.add_argument('--evaluation_log', type=str2bool, default=True)
     parser.add_argument('--video_caption_off', type=str2bool, default=False)
@@ -151,7 +151,7 @@ def argparser():
     parser.add_argument('--vf_iters', type=int, default=5)
 
     # misc
-    parser.add_argument('--prefix', type=str, default=None, help='Prefix for training files')
+    parser.add_argument('--prefix', type=str, default="serve_ours_ICLR2019", help='Prefix for training files')
     parser.add_argument('--render', type=str2bool, default=False, help='Render frames')
     parser.add_argument('--record', type=str2bool, default=False, help='Record video')
     parser.add_argument('--video_prefix', type=str, default=None)
