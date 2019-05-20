@@ -10,6 +10,7 @@ from mpi4py import MPI
 import tensorflow as tf
 import h5py
 import pickle
+import numpy as np
 
 import baselines.common.tf_util as U
 from baselines.common import set_global_seeds
