@@ -24,7 +24,7 @@ from transition_policy import TransitionPolicy
 from proximity_predictor import ProximityPredictor
 from config import argparser
 from util import make_env
-import rollouts as rollouts
+import rollouts 
 
 def load_buffers(proximity_predictors, ckpt_path):
     if proximity_predictors:
@@ -59,7 +59,7 @@ alpha = 0.1
 
 def run_coarticulation(env, primitive_pi, config):
     ob = env.reset()
-    rollout = Rollout()
+    rollout = rollouts.Rollout()
     primitive_env_name = primitive_pi.ob_env_name
     coart_pi = PrimitivePolicy(name="%s/coartpi" % primitive_env_name, env=env, ob_env_name=primitive_env_name, config=config)
     coart_oldpi = PrimitivePolicy(name="%s/coart_oldpi" % primitive_env_name, env=env, ob_env_name=primitive_env_name, config=config)
