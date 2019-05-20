@@ -45,7 +45,7 @@ def argparser():
     parser.add_argument('--meta_entcoeff', type=float, default=2e-4)
 
     # transition policy
-    parser.add_argument('--use_trans', type=str2bool, default=False)
+    parser.add_argument('--use_trans', type=str2bool, default=True)
     parser.add_argument('--use_trans_between_same_policy', type=str2bool, default=False)
     parser.add_argument('--trans_term_activation', type=str, default='softmax',
                         choices=['sigmoid', 'softmax'])
