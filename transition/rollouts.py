@@ -460,7 +460,8 @@ def add_advantage_rl(seg, gamma, lam):
     for t in reversed(range(T)):
         nonterminal = 1 - done[t]
         delta = rew[t] + gamma * vpred[t + 1] * nonterminal - vpred[t]
-        gaelam[t] = lastgaelam = delta + gamma * lam * nonterminal * lastgaelam
+        lastgaelam = delta + gamma * lam * nonterminal * lastgaelam
+        gaelam[t] = lastgaelam
     seg["tdlamret"] = seg["adv"] + seg["vpred"]
 
     assert np.isfinite(seg["vpred"]).all()

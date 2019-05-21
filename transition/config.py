@@ -117,9 +117,9 @@ def argparser():
     parser.add_argument('--load_meta_path', type=str, default=None, help='Only load the meta controller')
     parser.add_argument('--load_model_path', type=str, default=None)
     parser.add_argument('--write_summary_step', type=int, default=5)
-    parser.add_argument('--ckpt_save_step', type=int, default=100)
+    parser.add_argument('--ckpt_save_step', type=int, default=10)
     parser.add_argument('--max_iters', type=int, default=50) #TODO - Change
-    parser.add_argument('--num_rollouts', type=int, default=10000)
+    parser.add_argument('--num_rollouts', type=int, default=100)
     parser.add_argument('--num_batches', type=int, default=32)
     parser.add_argument('--num_trans_batches', type=int, default=256)
 
