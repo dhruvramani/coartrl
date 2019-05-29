@@ -45,7 +45,7 @@ class Rollout(object):
     def get(self):
         return self._history
 
-def traj_segment_generator_coart(env, pi, coart_pi, alpha, stochastic, config, training_inference=True):
+def traj_segment_generator_coart(env, primitive_pi, pi, stochastic, config, alpha=0.0, training_inference=False):
     t = 0
     ac = env.action_space.sample()
     done = False
@@ -74,7 +74,7 @@ def traj_segment_generator_coart(env, pi, coart_pi, alpha, stochastic, config, t
     while True:
         ac, vpred = pi.act(ob, stochastic)
 
-        if t >= config.num_rollouts : #and config.is_train and not training_inference:
+        if t >= config.num_rollouts and config.is_train and not training_inference:
             dicti = {"ob": obs, "rew": rews, "vpred": vpreds, "next_vpred": vpred * (1 - done),
                      "done": dones, "ac": acs, "ep_reward": ep_rets, "ep_length": ep_lens}
             for key, value in ep_reward.items():
@@ -90,7 +90,6 @@ def traj_segment_generator_coart(env, pi, coart_pi, alpha, stochastic, config, t
             acs = []
             t = 0
             vpred = pi.value(stochastic, ob)
-
         obs.append(ob)
         vpreds.append(vpred)
         acs.append(ac)
@@ -104,9 +103,8 @@ def traj_segment_generator_coart(env, pi, coart_pi, alpha, stochastic, config, t
             reward_info[key].append(value)
 
         ac_1, vpred_1 = pi.act(ob, stochastic)
-        # NOTE : Coart main code here
-        rew = (vpred_1 - vpred) + alpha * pi.pd.kl(coart_pi.pd) 
-        
+        rew = (vpred_1 - vpred) # + alpha * pi.pd.kl(coart_pi.pd) 
+
         rews.append(rew)
         dones.append(done)
         cur_ep_ret += rew
@@ -126,7 +124,7 @@ def traj_segment_generator_coart(env, pi, coart_pi, alpha, stochastic, config, t
                         ep_reward[key].append(np.mean(value))
                     else:
                         ep_reward[key].append(np.sum(value))
-            '''
+
             if not config.is_train or training_inference:
                 dicti = {"ep_reward": ep_rets, "ep_length": ep_lens, "visual_obs": visual_obs}
                 if config.is_collect_state:
@@ -143,13 +141,11 @@ def traj_segment_generator_coart(env, pi, coart_pi, alpha, stochastic, config, t
                 dones = []
                 acs = []
                 t = 0
-            '''
             reward_info = defaultdict(list)
             cur_ep_ret = 0
             cur_ep_len = 0
             visual_obs = []
             ob = env.reset()
-
 
 def traj_segment_generator(env, meta_pi, primitive_pis, trans_pis, stochastic, config,
                            training_inference=False, proximity_predictors=None):

@@ -16,11 +16,11 @@ def argparser():
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
     # environment
-    parser.add_argument('--env', help='environment ID', type=str, default='JacoServe-v1')
+    parser.add_argument('--env', help='environment ID', type=str, default='JacoToss-v1')
     parser.add_argument('--env_args', type=str, default=None, help='(optional) arguments for environment')
 
     # architecture (rl or hrl)
-    parser.add_argument('--hrl', type=str2bool, default=True, help='Set to False to train a \
+    parser.add_argument('--hrl', type=str2bool, default=False, help='Set to False to train a \
                         primitive policy or True to train transition policies for a complex skill')
 
     # vanilla mlp policy
@@ -33,7 +33,7 @@ def argparser():
     parser.add_argument('--rl_fixed_var', type=str2bool, default=True)
 
     # meta policy
-    parser.add_argument('--meta_duration', type=int, default=10)
+    parser.add_argument('--meta_duration', type=int, default=30)
     parser.add_argument('--meta_oracle', type=str2bool, default=False)
     parser.add_argument('--meta_num_hid_layers', type=int, default=2)
     parser.add_argument('--meta_hid_size', type=int, default=32)
@@ -45,7 +45,7 @@ def argparser():
     parser.add_argument('--meta_entcoeff', type=float, default=2e-4)
 
     # transition policy
-    parser.add_argument('--use_trans', type=str2bool, default=True)
+    parser.add_argument('--use_trans', type=str2bool, default=False)
     parser.add_argument('--use_trans_between_same_policy', type=str2bool, default=False)
     parser.add_argument('--trans_term_activation', type=str, default='softmax',
                         choices=['sigmoid', 'softmax'])
@@ -98,7 +98,7 @@ def argparser():
                         of primitive envs eg. JacoToss-v1,JacoHit-v1')
     parser.add_argument('--primitive_dir', type=str, default='../../transition/log',
                         help='Directory where primitives are located')
-    parser.add_argument('--primitive_paths', type=str2list, default="JacoToss.toss_ICLR2019,JacoHit.hit_ICLR2019", help='Separated list \
+    parser.add_argument('--primitive_paths', type=str2list, default="JacoToss.toss_coartl_prim,JacoHit.hit_coartl_prim", help='Separated list \
                         of model names inside primitive_dir loaded in order with primitive_envs \
                         eg. JacoToss.ICLR2019,JacoHit.ICLR2019')
     parser.add_argument('--primitive_num_hid_layers', type=int, default=2)
@@ -109,23 +109,28 @@ def argparser():
                         choices=['ppo', 'trpo'])
     parser.add_argument('--primitive_fixed_var', type=str2bool, default=True)
     parser.add_argument('--primitive_include_acc', type=str2bool, default=False)
-    parser.add_argument('--primitive_use_term', type=str2bool, default=True)
+    parser.add_argument('--primitive_use_term', type=str2bool, default=False)
+
+    # Coarticulation
+    parser.add_argument('--is_coart', type=str2bool, default=True)
+    parser.add_argument('--coart_dir', type=str, default='../../transition/log',
+                        help='Directory where coarticulation policies are located')
+    parser.add_argument('--coart_name', type=str2list, default="JacoToss.coartl_exp1")
 
     # training
-    parser.add_argument('--is_train', type=str2bool, default=False)
-    parser.add_argument('--is_coart', type=str2bool, default=True)
+    parser.add_argument('--is_train', type=str2bool, default=True)
     parser.add_argument('--load_meta_path', type=str, default=None, help='Only load the meta controller')
     parser.add_argument('--load_model_path', type=str, default=None)
     parser.add_argument('--write_summary_step', type=int, default=5)
-    parser.add_argument('--ckpt_save_step', type=int, default=10)
-    parser.add_argument('--max_iters', type=int, default=50) #TODO - Change
-    parser.add_argument('--num_rollouts', type=int, default=301)
+    parser.add_argument('--ckpt_save_step', type=int, default=100)
+    parser.add_argument('--max_iters', type=int, default=10001)
+    parser.add_argument('--num_rollouts', type=int, default=10000)
     parser.add_argument('--num_batches', type=int, default=32)
     parser.add_argument('--num_trans_batches', type=int, default=256)
 
     # evalution
     parser.add_argument('--num_evaluation_run', type=int, default=10)
-    parser.add_argument('--evaluate_proximity_predictor', type=str2bool, default=True)
+    parser.add_argument('--evaluate_proximity_predictor', type=str2bool, default=False)
     parser.add_argument('--evaluate_all_ckpts', type=str2bool, default=False)
     parser.add_argument('--evaluation_log', type=str2bool, default=True)
     parser.add_argument('--video_caption_off', type=str2bool, default=False)
@@ -151,8 +156,8 @@ def argparser():
     parser.add_argument('--vf_iters', type=int, default=5)
 
     # misc
-    parser.add_argument('--prefix', type=str, default="serve_ours_ICLR2019", help='Prefix for training files')
-    parser.add_argument('--render', type=str2bool, default=False, help='Render frames')
+    parser.add_argument('--prefix', type=str, default="coartl", help='Prefix for training files')
+    parser.add_argument('--render', type=str2bool, default=True, help='Render frames')
     parser.add_argument('--record', type=str2bool, default=False, help='Record video')
     parser.add_argument('--video_prefix', type=str, default=None)
     parser.add_argument('--log_dir', type=str, default='../../transition/log')
@@ -184,6 +189,7 @@ def argparser():
         args.render = False
         args.num_evaluation_run = 50
 
+    '''
     if args.render or args.record:
         import subprocess
         outputs = subprocess.run("ps ax | grep -Po '.*Xorg :\K(\d+|\d+.\d+)'", shell=True, stdout=subprocess.PIPE)
@@ -191,6 +197,6 @@ def argparser():
         if len(displays) != 1:
             print('Too many displays are available: {}'.format(', '.join(displays)))
         os.environ["DISPLAY"] = ":{}".format(displays[0])
-
+    '''
     return args
 
