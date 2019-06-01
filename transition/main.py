@@ -183,7 +183,7 @@ def run(config):
             networks.extend(proximity_predictors)
 
         # build trainer
-        from rl.trainer import Trainer
+        from trainer import Trainer
         trainer = Trainer(env, meta_pi, meta_oldpi,
                           proximity_predictors, num_primitives,
                           trans_pis, trans_oldpis, config)
@@ -212,7 +212,7 @@ def run(config):
         networks.append(old_policy)
 
         # build trainer
-        from rl.trainer_rl import RLTrainer
+        from trainer_rl import RLTrainer
         trainer = RLTrainer(env, policy, old_policy, config)
         # build rollout
         rollout = rollouts.traj_segment_generator_rl(
