@@ -59,7 +59,7 @@ def coarticulation(env, primitive_pi, config):
     coart_pi = PrimitivePolicy(name="%s/coartpi" % primitive_env_name, env=env, ob_env_name=primitive_env_name, config=config)
     coart_oldpi = PrimitivePolicy(name="%s/coart_oldpi" % primitive_env_name, env=env, ob_env_name=primitive_env_name, config=config)
 
-    var_list = coartpi.get_variables() + coart_oldpi.get_variables()
+    var_list = coart_pi.get_variables() + coart_oldpi.get_variables()
     coart_path = osp.expanduser(osp.join(config.coart_dir, config.coart_name))
     ckpt_path = load_model(coart_path, var_list)
 
