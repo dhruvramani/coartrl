@@ -30,6 +30,7 @@ def load_model(load_model_path, var_list=None):
         ckpt_path = tf.train.latest_checkpoint(load_model_path)
     else:
         ckpt_path = load_model_path
+        U.initialize()
         U.save_state(ckpt_path, var_list)
     if ckpt_path:
         U.load_state(ckpt_path, var_list)
