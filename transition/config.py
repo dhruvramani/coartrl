@@ -115,7 +115,7 @@ def argparser():
     parser.add_argument('--is_coart', type=str2bool, default=True)
     parser.add_argument('--coart_dir', type=str, default='../../transition/log',
                         help='Directory where coarticulation policies are located')
-    parser.add_argument('--coart_name', type=str2list, default="JacoToss.coartl_exp1")
+    parser.add_argument('--coart_name', type=str, default="JacoToss.coartl_exp1")
 
     # training
     parser.add_argument('--is_train', type=str2bool, default=True)
