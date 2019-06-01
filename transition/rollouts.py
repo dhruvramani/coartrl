@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 
 
 def render_frame(env, length, ret, primitive_name, render, record=False, caption_off=False):
+    '''
     if not render and not record:
         return None
     raw_img = env.unwrapped.render_frame()
@@ -20,15 +21,17 @@ def render_frame(env, length, ret, primitive_name, render, record=False, caption
         for i, t in enumerate(text):
             cv2.putText(raw_img, t, (x0, y0+i*dy), cv2.FONT_HERSHEY_SIMPLEX,
                         0.7, (255, 128, 128), 2, cv2.LINE_AA)
-
+    '''
     if render:
         env.render()
+    '''
         import time
         time.sleep(0.03)
         raw_img = cv2.resize(raw_img, (500, 500))
         cv2.imshow(env.spec.id, raw_img)
         cv2.waitKey(1)
     return raw_img if record else None
+    '''
 
 
 class Rollout(object):
