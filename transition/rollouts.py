@@ -106,8 +106,8 @@ def traj_segment_generator_coart(env, primitive_pi, pi, stochastic, config, alph
         for key, value in info.items():
             reward_info[key].append(value)
 
-        #ac_1, vpred_p1 = primitive_pi.act(ob, stochastic)
-        rew = vpred_p #+ pi.pd.kl(primitive_pi.pd) * alpha  # (vpred_p1 - vpred_p) 
+        ac_1, vpred_p1 = primitive_pi.act(ob, stochastic)
+        rew = (vpred_p1 - vpred_p) #+ pi.pd.kl(primitive_pi.pd) * alpha  
 
         rews.append(rew)
         dones.append(done)
