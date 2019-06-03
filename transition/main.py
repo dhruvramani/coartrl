@@ -69,7 +69,7 @@ def coarticulation(env, primitive_pi, config):
 
     trainer = RLTrainer(env, coart_pi, coart_oldpi, config)
     # NOTE : Will change the meaning of alpha later
-    rollout = rollouts.traj_segment_generator_coart(env, primitive_pi, coart_pi, alpha=100., stochastic=not config.is_collect_state, config=config)
+    rollout = rollouts.traj_segment_generator_coart(env, primitive_pi, coart_pi, alpha=0.5, stochastic=not config.is_collect_state, config=config)
 
     print("Training Co-Articulations")
     trainer.train(rollout)
