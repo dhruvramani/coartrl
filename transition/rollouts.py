@@ -451,6 +451,7 @@ def add_advantage_meta(seg, gamma, lam, meta_duration):
 
 
 def add_advantage_rl(seg, gamma, lam):
+    print(seg.keys())
     done = seg["done"]
     rew = seg["rew"]
     vpred = np.append(seg["vpred"], seg["next_vpred"])
