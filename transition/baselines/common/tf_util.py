@@ -256,7 +256,7 @@ def load_state(fname, var_list=None):
     saver.restore(get_session(), fname)
 
 def save_state(fname, var_list=None):
-    os.makedirs(os.path.dirname(fname), exist_ok=True)
+    os.makedirs(fname, exist_ok=True)
     if var_list is None:
         saver = tf.train.Saver()
     else:
