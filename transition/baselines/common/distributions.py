@@ -134,6 +134,7 @@ class CategoricalPd(Pd):
         return tf.nn.softmax_cross_entropy_with_logits(
             logits=self.logits,
             labels=one_hot_actions)
+        
     def kl(self, other):
         a0 = self.logits - tf.reduce_max(self.logits, axis=-1, keep_dims=True)
         a1 = other.logits - tf.reduce_max(other.logits, axis=-1, keep_dims=True)
@@ -143,6 +144,7 @@ class CategoricalPd(Pd):
         z1 = tf.reduce_sum(ea1, axis=-1, keep_dims=True)
         p0 = ea0 / z0
         return tf.reduce_sum(p0 * (a0 - tf.log(z0) - a1 + tf.log(z1)), axis=-1)
+
     def entropy(self):
         a0 = self.logits - tf.reduce_max(self.logits, axis=-1, keep_dims=True)
         ea0 = tf.exp(a0)
