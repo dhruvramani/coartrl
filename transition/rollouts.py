@@ -108,7 +108,7 @@ def traj_segment_generator_coart(env, primitive_pi, pi, stochastic, config, alph
 
         ac_1, vpred_p1 = primitive_pi.act(ob, stochastic)
         print(primitive_pi.pd.logstd.get_shape().as_list(), primitive_pi.pd.std.get_shape().as_list(), primitive_pi.pd.mean.get_shape().as_list())
-        rew = (vpred_p1 - vpred_p) - pi.pd.kl(primitive_pi.pd) * alpha  
+        rew = (vpred_p1 - vpred_p) #- pi.pd.kl(primitive_pi.pd) * alpha  
 
         rews.append(rew)
         dones.append(done)
