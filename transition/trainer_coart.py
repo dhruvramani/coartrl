@@ -162,7 +162,7 @@ class RLTrainer(object):
         gvp = tf.add_n([tf.reduce_sum(g*tangent) for (g, tangent) in zipsame(klgrads, tangents)])  # pylint: disable=E1111
         fvp = U.flatgrad(gvp, self.pol_var_list)
 
-        self.compute_klmean = U.function([], self.klmean)
+        self.compute_klmean = U.function(obs + [ac, atarg], self.klmean)
         self._update_oldpi = U.function([], [], updates=[
             tf.assign(oldv, newv) for (oldv, newv) in zipsame(oldpi.get_variables(), pi.get_variables())])
         self._compute_losses = U.function(obs + [ac, atarg], pol_losses)
