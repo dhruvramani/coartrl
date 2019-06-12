@@ -5,6 +5,7 @@ import os
 import numpy as np
 import cv2
 import matplotlib.pyplot as plt
+import tensorflow as tf
 
 
 def render_frame(env, length, ret, primitive_name, render, record=False, caption_off=False):
