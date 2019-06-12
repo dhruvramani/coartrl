@@ -68,9 +68,9 @@ def coarticulation(env, primitive_pi, config):
     coart_path = osp.expanduser(osp.join(config.coart_dir, config.coart_name))
     ckpt_path = load_model(coart_path, var_list)
 
-    from trainer_rl import RLTrainer
+    from trainer_coart import RLTrainer
 
-    trainer = RLTrainer(env, coart_pi, coart_oldpi, config)
+    trainer = RLTrainer(env, coart_pi, coart_oldpi, primitive_pi, config)
     # NOTE : Will change the meaning of alpha later
     rollout = rollouts.traj_segment_generator_coart(env, primitive_pi, coart_pi, alpha=0.5, stochastic=not config.is_collect_state, config=config)
 

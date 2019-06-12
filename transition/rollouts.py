@@ -108,8 +108,10 @@ def traj_segment_generator_coart(env, primitive_pi, pi, stochastic, config, alph
             reward_info[key].append(value)
 
         ac_1, vpred_p1 = primitive_pi.act(ob, stochastic)
-        print(primitive_pi.pd.logstd.get_shape().as_list(), primitive_pi.pd.std.get_shape().as_list(), primitive_pi.pd.mean.get_shape().as_list())
-        rew = (vpred_p1 - vpred_p) - tf.reduce_mean(primitive_pi.pd.kl(pi.pd)) * alpha  
+        klmeanval = 0.0
+        with open('klvalue.txt', 'r') as f:
+            klmeanval = float(f.read().split("\n")[0])
+        rew = (vpred_p1 - vpred_p) - klmeanval * alpha  
 
         rews.append(rew)
         dones.append(done)
