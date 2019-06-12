@@ -55,6 +55,8 @@ def load_buffers(proximity_predictors, ckpt_path):
             logger.warn('No buffers are available at {}'.format(buffer_path))
 
 def coarticulation(env, primitive_pi, config):
+    print(primitive_pi.pdtype)
+    return 
     ob = env.reset()
     rollout = rollouts.Rollout()
     primitive_env_name = primitive_pi.ob_env_name
