@@ -30,7 +30,6 @@ class RLTrainer(object):
         self.policy = policy
         self.old_policy = old_policy
         self.primitive_policy = primitive_policy
-        self.klmean = tf.reduce_mean(self.primitive_policy.pd.kl(self.policy.pd))
 
         self._entcoeff = config.entcoeff
         self._optim_epochs = config.optim_epochs
@@ -112,6 +111,7 @@ class RLTrainer(object):
     def _build_trpo(self):
         pi = self.policy
         oldpi = self.old_policy
+        primitive_pi = self.primitive_policy
 
         # input placeholders
         obs = pi.obs
@@ -124,6 +124,8 @@ class RLTrainer(object):
         self.pol_var_list = [v for v in all_var_list if v.name.split("/")[2].startswith("pol")]
         self.vf_var_list = [v for v in all_var_list if v.name.split("/")[2].startswith("vf")]
         self._vf_adam = MpiAdam(self.vf_var_list)
+
+        self.klmean = tf.reduce_mean(primitive_pi.pd.kl(pi.pd))
 
         kl_oldnew = oldpi.pd.kl(pi.pd)
         ent = pi.pd.entropy()
@@ -160,6 +162,7 @@ class RLTrainer(object):
         gvp = tf.add_n([tf.reduce_sum(g*tangent) for (g, tangent) in zipsame(klgrads, tangents)])  # pylint: disable=E1111
         fvp = U.flatgrad(gvp, self.pol_var_list)
 
+        self.compute_klmean = U.function([], self.klmean)
         self._update_oldpi = U.function([], [], updates=[
             tf.assign(oldv, newv) for (oldv, newv) in zipsame(oldpi.get_variables(), pi.get_variables())])
         self._compute_losses = U.function(obs + [ac, atarg], pol_losses)
@@ -225,10 +228,10 @@ class RLTrainer(object):
             self._cur_lrmult = max(1.0 - float(step) / config.max_iters, 0)
 
             # rollout
-            klmeanval = sess.run(self.klmean)
+            klmeanval = self.compute_klmean()
             with open('klvalue.txt', 'w+') as f:
                 f.write("{}".format(klmeanval))
-                
+
             with self.timed("sampling"):
                 rolls = rollout.__next__()
             if config.rl_method == 'trpo':
