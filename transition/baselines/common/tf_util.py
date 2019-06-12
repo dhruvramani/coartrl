@@ -404,7 +404,6 @@ class _Function(object):
         # Update the kwargs
         kwargs_passed_inpt_names = set()
         for inpt in self.inputs[len(args):]:
-            print(inpt.name)
             inpt_name = inpt.name.split(':')[0]
             inpt_name = inpt_name.split('/')[-1]
             assert inpt_name not in kwargs_passed_inpt_names, \

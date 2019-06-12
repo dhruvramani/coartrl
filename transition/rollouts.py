@@ -109,7 +109,7 @@ def traj_segment_generator_coart(env, primitive_pi, pi, stochastic, config, alph
 
         ac_1, vpred_p1 = primitive_pi.act(ob, stochastic)
         klmeanval = 0.0
-        with open('klvalue.txt', 'r') as f:
+        with open('./klvalue.txt', 'r') as f:
             klmeanval = float(f.read().split("\n")[0])
         rew = (vpred_p1 - vpred_p) - klmeanval * alpha  
 

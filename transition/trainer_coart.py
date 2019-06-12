@@ -228,10 +228,6 @@ class RLTrainer(object):
             self._cur_lrmult = max(1.0 - float(step) / config.max_iters, 0)
 
             # rollout
-            klmeanval = self.compute_klmean()
-            with open('klvalue.txt', 'w+') as f:
-                f.write("{}".format(klmeanval))
-
             with self.timed("sampling"):
                 rolls = rollout.__next__()
             if config.rl_method == 'trpo':
@@ -372,6 +368,10 @@ class RLTrainer(object):
             stepsize = 1.0
             thbefore = self._get_flat()
             for _ in range(10):
+                klmeanval = self.compute_klmean(*args)
+                with open('./klvalue.txt', 'w+') as f:
+                    f.write("{}".format(klmeanval))
+
                 thnew = thbefore + fullstep * stepsize
                 self._set_from_flat(thnew)
                 meanlosses = self._compute_losses(*args)
