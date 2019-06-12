@@ -370,7 +370,7 @@ class RLTrainer(object):
             for _ in range(10):
                 klmeanval = self.compute_klmean(*args)
                 with open('./klvalue.txt', 'w+') as f:
-                    f.write("{}".format(klmeanval))
+                    f.write("{}\n".format(klmeanval))
 
                 thnew = thbefore + fullstep * stepsize
                 self._set_from_flat(thnew)
