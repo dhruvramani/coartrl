@@ -122,7 +122,7 @@ class PrimitivePolicy(object):
         ac, vpred = self._act(stochastic, *ob_list)
         return ac[0], vpred[0]
 
-    def value(self, stochastic, ob):
+    def value(self, ob, stochastic):
         if self.hard_coded:
             return 0
         ob_list = self.get_ob_list(ob)
