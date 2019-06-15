@@ -44,7 +44,7 @@ Soft Actor-Critic
 
 """
 def sac(env, test_env, primitive_pi, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(), seed=0, 
-        steps_per_epoch=5000, epochs=100, replay_size=int(1e6), gamma=0.99, 
+        steps_per_epoch=5000, epochs=1000, replay_size=int(1e6), gamma=0.99, 
         polyak=0.995, lr=1e-3, alpha=0.2, batch_size=100, start_steps=10000, 
         max_ep_len=10000, logger_kwargs=dict(), save_freq=1):
     """
@@ -234,10 +234,10 @@ def sac(env, test_env, primitive_pi, actor_critic=core.mlp_actor_critic, ac_kwar
 
     start_time = time.time()
     o, r, d, ep_ret, ep_len = env.reset(), 0, False, 0, 0
-    total_steps = steps_per_epoch * epochs
+    total_steps, t = steps_per_epoch * epochs, 0
 
     # Main loop: collect experience in env and update/log each epoch
-    for t in range(total_steps):
+    while True:
 
         """
         Until start_steps have elapsed, randomly sample actions
@@ -268,7 +268,7 @@ def sac(env, test_env, primitive_pi, actor_critic=core.mlp_actor_critic, ac_kwar
         # most recent observation!
         o = o2
 
-        if d or (ep_len == max_ep_len):
+        if d:# or (ep_len == max_ep_len):
             """
             Perform all SAC updates at the end of the trajectory.
             This is a slight difference from the SAC specified in the
@@ -319,8 +319,7 @@ def sac(env, test_env, primitive_pi, actor_critic=core.mlp_actor_critic, ac_kwar
             logger.log_tabular('LossQ2', average_only=True)
             logger.log_tabular('Time', time.time()-start_time)
             logger.dump_tabular()
-
-    return pi, q1, q2
+         t += 1
 
 if __name__ == '__main__':
     import argparse

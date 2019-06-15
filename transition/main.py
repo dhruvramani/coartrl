@@ -87,7 +87,7 @@ def coarticulation_sac(env, primitive_pi, config):
     ac_kwargs = dict(hidden_sizes=[config.sac_hid] * config.sac_l)
 
     print("Training Co-Articulations")
-    pi, q1, q2 = sac(env, test_env=test_env, primitive_pi=primitive_pi, ac_kwargs=ac_kwargs, alpha=0.0, logger_kwargs=logger_kwargs)
+    sac(env, test_env=test_env, primitive_pi=primitive_pi, ac_kwargs=ac_kwargs, alpha=0.0, logger_kwargs=logger_kwargs)
 
 def run(config):
     sess = U.single_threaded_session(gpu=False)
