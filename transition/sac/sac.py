@@ -150,7 +150,7 @@ def sac(env, test_env, primitive_pi, actor_critic=core.mlp_actor_critic, ac_kwar
     x_ph, a_ph, x2_ph, r_ph, d_ph = core.placeholders(obs_dim, act_dim, obs_dim, None, None)
 
     # Primitive Policy Value Placeholder
-    pval_targ = tf.placeholder(dtype=tf.float32, shape=(None, ))
+    pval_targ = tf.placeholder(dtype=tf.float32, shape=(None))
 
     # Main outputs from computation graph
     with tf.variable_scope('main'):
