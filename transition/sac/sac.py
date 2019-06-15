@@ -5,7 +5,7 @@ import time
 import sac.core
 import copy
 from sac.core import get_vars
-from utils.logx import EpochLogger
+from sac.utils.logx import EpochLogger
 
 class ReplayBuffer:
     """
