@@ -250,7 +250,7 @@ def sac(env, test_env, primitive_pi, actor_critic=core.mlp_actor_critic, ac_kwar
             a = env.action_space.sample()
 
         # Step the env
-        env.render()
+        #env.render()
         o2, r, d, _ = env.step(a)
         ep_ret += r
         ep_len += 1
