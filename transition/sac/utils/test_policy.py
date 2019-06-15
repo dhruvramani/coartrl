@@ -3,8 +3,8 @@ import joblib
 import os
 import os.path as osp
 import tensorflow as tf
-from logx import EpochLogger
-from logx import restore_tf_graph
+from utils.logx import EpochLogger
+from utils.logx import restore_tf_graph
 
 def load_policy(fpath, itr='last', deterministic=False):
 
