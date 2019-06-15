@@ -160,7 +160,7 @@ def sac(env, primitive_pi, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(),
 
     # Primitive value network
     with tf.variable_scope('primitive_v'):
-        pval_targ = primitive_pi.value(stochastic=True, x_ph)
+        pval_targ = primitive_pi.value(x_ph, stochastic=True)
 
     # Experience buffer
     replay_buffer = ReplayBuffer(obs_dim=obs_dim, act_dim=act_dim, size=replay_size)
