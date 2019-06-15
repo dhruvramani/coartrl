@@ -2,9 +2,9 @@ import numpy as np
 import tensorflow as tf
 import gym
 import time
-import .core
+import sac.core
 import copy
-from .core import get_vars
+from sac.core import get_vars
 from utils.logx import EpochLogger
 
 class ReplayBuffer:
