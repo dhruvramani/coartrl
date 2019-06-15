@@ -319,7 +319,8 @@ def sac(env, test_env, primitive_pi, actor_critic=core.mlp_actor_critic, ac_kwar
             logger.log_tabular('LossQ2', average_only=True)
             logger.log_tabular('Time', time.time()-start_time)
             logger.dump_tabular()
-         t += 1
+
+        t += 1
 
 if __name__ == '__main__':
     import argparse
