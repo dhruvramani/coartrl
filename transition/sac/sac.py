@@ -130,7 +130,7 @@ def sac(env, primitive_pi, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(),
     """
 
     logger = EpochLogger(**logger_kwargs)
-    logger.save_config(locals())
+    #logger.save_config(locals())
 
     tf.set_random_seed(seed)
     np.random.seed(seed)
