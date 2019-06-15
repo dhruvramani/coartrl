@@ -149,6 +149,9 @@ def sac(env, test_env, primitive_pi, actor_critic=core.mlp_actor_critic, ac_kwar
     # Inputs to computation graph
     x_ph, a_ph, x2_ph, r_ph, d_ph = core.placeholders(obs_dim, act_dim, obs_dim, None, None)
 
+    # Primitive Policy Value Placeholder
+    pval_targ = tf.placeholder(dtype=tf.float32, shape=(None, ))
+
     # Main outputs from computation graph
     with tf.variable_scope('main'):
         mu, pi, logp_pi, q1, q2, q1_pi, q2_pi, _ = actor_critic(x_ph, a_ph, **ac_kwargs)
@@ -156,10 +159,6 @@ def sac(env, test_env, primitive_pi, actor_critic=core.mlp_actor_critic, ac_kwar
     #   Target value network
     #   with tf.variable_scope('target'):
     #       _, _, _, _, _, _, _, v_targ  = actor_critic(x2_ph, a_ph, **ac_kwargs)
-
-    # Primitive value network
-    with tf.variable_scope('primitive_v'):
-        pval_targ = primitive_pi.value(x_ph, stochastic=True)
 
     # Experience buffer
     replay_buffer = ReplayBuffer(obs_dim=obs_dim, act_dim=act_dim, size=replay_size)
@@ -282,6 +281,7 @@ def sac(env, test_env, primitive_pi, actor_critic=core.mlp_actor_critic, ac_kwar
                              a_ph: batch['acts'],
                              r_ph: batch['rews'],
                              d_ph: batch['done'],
+                             pval_targ : primitive_pi.value(batch['obs1'], stochastic=True)
                             }
                 outs = sess.run(step_ops, feed_dict)
                 logger.store(LossPi=outs[0], LossQ1=outs[1], LossQ2=outs[2],
