@@ -2,7 +2,7 @@ import numpy as np
 import tensorflow as tf
 import gym
 import time
-import sac.core
+import sac.core as core
 import copy
 from sac.core import get_vars
 from sac.utils.logx import EpochLogger
