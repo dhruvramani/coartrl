@@ -173,11 +173,11 @@ def sac(env, test_env, primitive_pi, actor_critic=core.mlp_actor_critic, ac_kwar
     min_q_pi = tf.minimum(q1_pi, q2_pi)
 
     # Targets for Q and V regression
-    q_backup = tf.stop_gradient(r_ph + gamma*(1-d_ph) * pval_targ)
+    q_backup = tf.stop_gradient(r_ph + gamma * (1 - d_ph) * pval_targ)
     #   v_backup = tf.stop_gradient(min_q_pi - alpha * logp_pi)
 
     # Soft actor-critic losses
-    pi_loss = tf.reduce_mean(alpha * logp_pi - q1_pi)
+    pi_loss = tf.reduce_mean(alpha * logp_pi - q1_pi) # Ascent, hence negative
     q1_loss = 0.5 * tf.reduce_mean((q_backup - q1)**2)
     q2_loss = 0.5 * tf.reduce_mean((q_backup - q2)**2)
     #   v_loss = 0.5 * tf.reduce_mean((v_backup - v)**2)
@@ -227,7 +227,6 @@ def sac(env, test_env, primitive_pi, actor_critic=core.mlp_actor_critic, ac_kwar
             o, r, d, ep_ret, ep_len = test_env.reset(), 0, False, 0, 0
             while not(d or (ep_len == max_ep_len)):
                 # Take deterministic actions at test time 
-                test_env.render()
                 o, r, d, _ = test_env.step(get_action(o, True))
                 ep_ret += r
                 ep_len += 1
@@ -281,12 +280,10 @@ def sac(env, test_env, primitive_pi, actor_critic=core.mlp_actor_critic, ac_kwar
                              a_ph: batch['acts'],
                              r_ph: batch['rews'],
                              d_ph: batch['done'],
-                             pval_targ : primitive_pi.value(batch['obs1'], stochastic=True)
+                             pval_targ : primitive_pi.value(batch['obs2'], stochastic=True)
                             }
                 outs = sess.run(step_ops, feed_dict)
-                logger.store(LossPi=outs[0], LossQ1=outs[1], LossQ2=outs[2],
-                             LossV=outs[3], Q1Vals=outs[4], Q2Vals=outs[5],
-                             VVals=outs[6], LogPi=outs[7])
+                logger.store(LossPi=outs[0], LossQ1=outs[1], LossQ2=outs[2], Q1Vals=outs[3], Q2Vals=outs[4], VVals=outs[5], LogPi=outs[6])
 
             logger.store(EpRet=ep_ret, EpLen=ep_len)
             o, r, d, ep_ret, ep_len = env.reset(), 0, False, 0, 0
@@ -312,7 +309,6 @@ def sac(env, test_env, primitive_pi, actor_critic=core.mlp_actor_critic, ac_kwar
             logger.log_tabular('TotalEnvInteracts', t)
             logger.log_tabular('Q1Vals', with_min_and_max=True) 
             logger.log_tabular('Q2Vals', with_min_and_max=True) 
-            logger.log_tabular('VVals', with_min_and_max=True) 
             logger.log_tabular('LogPi', with_min_and_max=True)
             logger.log_tabular('LossPi', average_only=True)
             logger.log_tabular('LossQ1', average_only=True)
