@@ -258,7 +258,8 @@ def sac(env, test_env, primitive_pi, actor_critic=core.mlp_actor_critic, ac_kwar
         # Ignore the "done" signal if it comes from hitting the time
         # horizon (that is, when it's an artificial terminal signal
         # that isn't based on the agent's state)
-        d = False if ep_len==max_ep_len else d
+        
+        #d = False if ep_len==max_ep_len else d
 
         # Store experience to replay buffer
         replay_buffer.store(o, a, r, o2, d)
