@@ -25,6 +25,8 @@ from config import argparser
 from util import make_env
 import rollouts 
 
+from sac.sac import sac
+
 def load_model(load_model_path, var_list=None):
     if os.path.isdir(load_model_path):
         ckpt_path = tf.train.latest_checkpoint(load_model_path)
@@ -58,21 +60,21 @@ def coarticulation(env, primitive_pi, config):
     ob = env.reset()
     rollout = rollouts.Rollout()
     primitive_env_name = primitive_pi.ob_env_name
-    coart_pi = PrimitivePolicy(name="%s/coartpi" % primitive_env_name, env=env, ob_env_name=primitive_env_name, config=config)
-    coart_oldpi = PrimitivePolicy(name="%s/coart_oldpi" % primitive_env_name, env=env, ob_env_name=primitive_env_name, config=config)
 
+    # Old ascent code
+    #coart_pi = PrimitivePolicy(name="%s/coartpi" % primitive_env_name, env=env, ob_env_name=primitive_env_name, config=config)
+    #coart_oldpi = PrimitivePolicy(name="%s/coart_oldpi" % primitive_env_name, env=env, ob_env_name=primitive_env_name, config=config)
     # BIG TIME HACK - to avoid debugging
-    config.is_train = True
-
-    var_list = coart_pi.get_variables() + coart_oldpi.get_variables()
-    coart_path = osp.expanduser(osp.join(config.coart_dir, config.coart_name))
-    ckpt_path = load_model(coart_path, var_list)
-
-    from trainer_coart import RLTrainer
-
-    trainer = RLTrainer(env, coart_pi, coart_oldpi, primitive_pi, config)
+    #config.is_train = True
+    #var_list = coart_pi.get_variables() + coart_oldpi.get_variables()
+    #coart_path = osp.expanduser(osp.join(config.coart_dir, config.coart_name))
+    #ckpt_path = load_model(coart_path, var_list)
+    #from trainer_coart import RLTrainer
+    #trainer = RLTrainer(env, coart_pi, coart_oldpi, primitive_pi, config)
     # NOTE : Will change the meaning of alpha later
-    rollout = rollouts.traj_segment_generator_coart(env, primitive_pi, coart_pi, alpha=1.0, stochastic=not config.is_collect_state, config=config)
+    #rollout = rollouts.traj_segment_generator_coart(env, primitive_pi, coart_pi, alpha=1.0, stochastic=not config.is_collect_state, config=config)
+
+
 
     print("Training Co-Articulations")
     trainer.train(rollout)

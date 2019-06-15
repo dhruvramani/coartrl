@@ -20,7 +20,7 @@ from baselines.common.cg import cg
 from baselines.statistics import stats
 
 import rollouts as rollouts
-import dataset as dataset
+#import dataset as dataset
 
 
 class RLTrainer(object):
