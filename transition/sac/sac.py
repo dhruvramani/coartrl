@@ -136,7 +136,7 @@ def sac(env, test_env, primitive_pi, actor_critic=core.mlp_actor_critic, ac_kwar
 
     test_env.reset()
 
-    obs_dim = env.observation_space.shape
+    obs_dim = env.observation_space.shape[0]
     print(obs_dim)
     act_dim = env.action_space.shape[0]
 
