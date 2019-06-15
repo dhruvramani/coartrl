@@ -321,6 +321,8 @@ def sac(env, actor_critic=core.mlp_actor_critic, primitive_pi, ac_kwargs=dict(),
             logger.log_tabular('Time', time.time()-start_time)
             logger.dump_tabular()
 
+    return pi, q1, q2
+
 if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser()

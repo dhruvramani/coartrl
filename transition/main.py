@@ -56,28 +56,34 @@ def load_buffers(proximity_predictors, ckpt_path):
         else:
             logger.warn('No buffers are available at {}'.format(buffer_path))
 
-def coarticulation(env, primitive_pi, config):
+def coarticulation_trpo(env, primitive_pi, config):
     ob = env.reset()
     rollout = rollouts.Rollout()
     primitive_env_name = primitive_pi.ob_env_name
+    coart_pi = PrimitivePolicy(name="%s/coartpi" % primitive_env_name, env=env, ob_env_name=primitive_env_name, config=config)
+    coart_oldpi = PrimitivePolicy(name="%s/coart_oldpi" % primitive_env_name, env=env, ob_env_name=primitive_env_name, config=config)
 
-    # Old ascent code
-    #coart_pi = PrimitivePolicy(name="%s/coartpi" % primitive_env_name, env=env, ob_env_name=primitive_env_name, config=config)
-    #coart_oldpi = PrimitivePolicy(name="%s/coart_oldpi" % primitive_env_name, env=env, ob_env_name=primitive_env_name, config=config)
     # BIG TIME HACK - to avoid debugging
-    #config.is_train = True
-    #var_list = coart_pi.get_variables() + coart_oldpi.get_variables()
-    #coart_path = osp.expanduser(osp.join(config.coart_dir, config.coart_name))
-    #ckpt_path = load_model(coart_path, var_list)
-    #from trainer_coart import RLTrainer
-    #trainer = RLTrainer(env, coart_pi, coart_oldpi, primitive_pi, config)
+    config.is_train = True
+
+    var_list = coart_pi.get_variables() + coart_oldpi.get_variables()
+    coart_path = osp.expanduser(osp.join(config.coart_dir, config.coart_name))
+    ckpt_path = load_model(coart_path, var_list)
+
+    from trainer_coart import RLTrainer
+
+    trainer = RLTrainer(env, coart_pi, coart_oldpi, primitive_pi, config)
     # NOTE : Will change the meaning of alpha later
-    #rollout = rollouts.traj_segment_generator_coart(env, primitive_pi, coart_pi, alpha=1.0, stochastic=not config.is_collect_state, config=config)
-
-
+    rollout = rollouts.traj_segment_generator_coart(env, primitive_pi, coart_pi, alpha=1.0, stochastic=not config.is_collect_state, config=config)
 
     print("Training Co-Articulations")
     trainer.train(rollout)
+
+def coarticulation_sac(env, primitive_pi, config):
+    ob = env.reset()
+    primitive_env_name = primitive_pi.ob_env_name
+    print("Training Co-Articulations")
+    pi, q1, q2 = sac(env, primitive_pi=primitive_pi, alpha=0.0)
 
 def run(config):
     sess = U.single_threaded_session(gpu=False)
@@ -280,7 +286,10 @@ def run(config):
         logger.info("* Load all policies from checkpoint: {}".format(ckpt_path))
 
     if config.is_coart:
-        coarticulation(env, policy, config)
+        if(config.coart_method == 'trpo'):
+            coarticulation_trpo(env, policy, config)
+        elif(config.coart_method == 'sac'):
+            coarticulation_sac(env, policy, config)
     elif config.is_train:
         trainer.train(rollout)
     else:
