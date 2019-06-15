@@ -3,7 +3,6 @@ import tensorflow as tf
 import gym
 import time
 import sac.core as core
-import copy
 from sac.core import get_vars
 from sac.utils.logx import EpochLogger
 
@@ -44,7 +43,7 @@ Soft Actor-Critic
 (With slight variations that bring it closer to TD3)
 
 """
-def sac(env, primitive_pi, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(), seed=0, 
+def sac(env, test_env, primitive_pi, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(), seed=0, 
         steps_per_epoch=5000, epochs=100, replay_size=int(1e6), gamma=0.99, 
         polyak=0.995, lr=1e-3, alpha=0.2, batch_size=100, start_steps=10000, 
         max_ep_len=1000, logger_kwargs=dict(), save_freq=1):
@@ -135,7 +134,6 @@ def sac(env, primitive_pi, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(),
     tf.set_random_seed(seed)
     np.random.seed(seed)
 
-    test_env = copy.deepcopy(env)
     test_env.reset()
 
     obs_dim = env.observation_space.shape[0]
@@ -229,6 +227,7 @@ def sac(env, primitive_pi, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(),
             o, r, d, ep_ret, ep_len = test_env.reset(), 0, False, 0, 0
             while not(d or (ep_len == max_ep_len)):
                 # Take deterministic actions at test time 
+                test_env.render()
                 o, r, d, _ = test_env.step(get_action(o, True))
                 ep_ret += r
                 ep_len += 1
@@ -252,8 +251,8 @@ def sac(env, primitive_pi, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(),
             a = env.action_space.sample()
 
         # Step the env
-        o2, r, d, _ = env.step(a)
         env.render()
+        o2, r, d, _ = env.step(a)
         ep_ret += r
         ep_len += 1
 
