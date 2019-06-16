@@ -179,7 +179,7 @@ def sac(env, test_env, primitive_pi, actor_critic=core.mlp_actor_critic, ac_kwar
     # Soft actor-critic losses
     pi_loss = tf.reduce_mean(alpha * logp_pi - q1_pi) # Ascent, hence negative
     q1_loss = 0.5 * tf.reduce_mean((q_backup - q1)**2)
-    #q2_loss = 0.5 * tf.reduce_mean((q_backup - q2)**2)
+    q2_loss = 0.0 # 0.5 * tf.reduce_mean((q_backup - q2)**2)
     #   v_loss = 0.5 * tf.reduce_mean((v_backup - v)**2)
     value_loss = q1_loss #+ q2_loss #+ v_loss
 
