@@ -96,7 +96,7 @@ def traj_segment_generator_coart(env, primitive_pi, pi, stochastic, config, alph
             vpred = pi.value(stochastic, ob)
         obs.append(ob)
         vpreds.append(vpred)
-        vpred_p = primitive_pi.value(stochastic, ob)
+        vpred_p = primitive_pi.value(ob, stochastic)
         acs.append(ac)
         vob = render_frame(
             env, cur_ep_len, cur_ep_ret, config.rl_method, config.render,
