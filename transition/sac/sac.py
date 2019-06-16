@@ -179,7 +179,7 @@ def sac(env, test_env, primitive_pi, actor_critic=core.mlp_actor_critic, ac_kwar
     # Soft actor-critic losses
     pi_loss = tf.reduce_mean(alpha * logp_pi - q1_pi) # Ascent, hence negative
     q1_loss = 0.5 * tf.reduce_mean((q_backup - q1)**2)
-    q2_loss = 0.0 # 0.5 * tf.reduce_mean((q_backup - q2)**2)
+    #q2_loss = 0.5 * tf.reduce_mean((q_backup - q2)**2)
     #   v_loss = 0.5 * tf.reduce_mean((v_backup - v)**2)
     value_loss = q1_loss #+ q2_loss #+ v_loss
 
@@ -203,8 +203,8 @@ def sac(env, test_env, primitive_pi, actor_critic=core.mlp_actor_critic, ac_kwar
     #                              for v_main, v_targ in zip(get_vars('main'), get_vars('target'))])
 
     # All ops to call during one training step
-    step_ops = [pi_loss, q1_loss, q2_loss, q1, q2, pval_targ, logp_pi, 
-                train_pi_op, train_value_op] #, target_update, v_loss, v]
+    step_ops = [pi_loss, q1_loss, q1, q2, pval_targ, logp_pi, 
+                train_pi_op, train_value_op] #, q2_loss target_update, v_loss, v]
 
     # Initializing targets to match main variables
     #   target_init = tf.group([tf.assign(v_targ, v_main)
@@ -286,8 +286,8 @@ def sac(env, test_env, primitive_pi, actor_critic=core.mlp_actor_critic, ac_kwar
                             }
                 outs = sess.run(step_ops, feed_dict)
                 logger.store(LossPi=outs[0], LossQ1=outs[1], LossQ2=outs[2],
-                             Q1Vals=outs[3], Q2Vals=outs[4],
-                             VVals=outs[5], LogPi=outs[6])
+                             Q1Vals=outs[3], #Q2Vals=outs[4],
+                             VVals=outs[4], LogPi=outs[5])
 
             logger.store(EpRet=ep_ret, EpLen=ep_len)
             o, r, d, ep_ret, ep_len = env.reset(), 0, False, 0, 0
