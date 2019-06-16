@@ -93,7 +93,7 @@ def traj_segment_generator_coart(env, primitive_pi, pi, stochastic, config, alph
             dones = []
             acs = []
             t = 0
-            vpred = pi.value(stochastic, ob)
+            vpred = pi.value(ob, stochastic)
         obs.append(ob)
         vpreds.append(vpred)
         vpred_p = primitive_pi.value(ob, stochastic)
@@ -388,7 +388,7 @@ def traj_segment_generator_rl(env, pi, stochastic, config, training_inference=Fa
             dones = []
             acs = []
             t = 0
-            vpred = pi.value(stochastic, ob)
+            vpred = pi.value(ob, stochastic)
         obs.append(ob)
         vpreds.append(vpred)
         acs.append(ac)
