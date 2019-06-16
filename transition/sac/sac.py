@@ -173,15 +173,15 @@ def sac(env, test_env, primitive_pi, actor_critic=core.mlp_actor_critic, ac_kwar
     min_q_pi = tf.minimum(q1_pi, q2_pi)
 
     # Targets for Q and V regression
-    q_backup = tf.stop_gradient(r_ph + gamma * (1 - d_ph) * pval_targ)
+    q_backup = r_ph + gamma * (1 - d_ph) * pval_targ # tf.stop_gradient( )
     #   v_backup = tf.stop_gradient(min_q_pi - alpha * logp_pi)
 
     # Soft actor-critic losses
     pi_loss = tf.reduce_mean(alpha * logp_pi - q1_pi) # Ascent, hence negative
     q1_loss = 0.5 * tf.reduce_mean((q_backup - q1)**2)
-    q2_loss = 0.5 * tf.reduce_mean((q_backup - q2)**2)
+    #q2_loss = 0.5 * tf.reduce_mean((q_backup - q2)**2)
     #   v_loss = 0.5 * tf.reduce_mean((v_backup - v)**2)
-    value_loss = q1_loss + q2_loss #+ v_loss
+    value_loss = q1_loss #+ q2_loss #+ v_loss
 
     # Policy train op 
     # (has to be separate from value train op, because q1_pi appears in pi_loss)
@@ -197,13 +197,14 @@ def sac(env, test_env, primitive_pi, actor_critic=core.mlp_actor_critic, ac_kwar
 
     # Polyak averaging for target variables
     # (control flow because sess.run otherwise evaluates in nondeterministic order)
-    with tf.control_dependencies([train_value_op]):
-        target_update = tf.group([tf.assign(v_targ, polyak*v_targ + (1-polyak)*v_main)
-                                  for v_main, v_targ in zip(get_vars('main'), get_vars('target'))])
+    
+    # with tf.control_dependencies([train_value_op]):
+    #    target_update = tf.group([tf.assign(v_targ, polyak*v_targ + (1-polyak)*v_main)
+    #                              for v_main, v_targ in zip(get_vars('main'), get_vars('target'))])
 
     # All ops to call during one training step
     step_ops = [pi_loss, q1_loss, q2_loss, q1, q2, pval_targ, logp_pi, 
-                train_pi_op, train_value_op, target_update] #   v_loss, v,
+                train_pi_op, train_value_op] #, target_update, v_loss, v]
 
     # Initializing targets to match main variables
     #   target_init = tf.group([tf.assign(v_targ, v_main)
