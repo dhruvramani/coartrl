@@ -312,7 +312,7 @@ def sac(env, test_env, primitive_pi, actor_critic=core.mlp_actor_critic, ac_kwar
             logger.log_tabular('TestEpLen', average_only=True)
             logger.log_tabular('TotalEnvInteracts', t)
             logger.log_tabular('Q1Vals', with_min_and_max=True) 
-            logger.log_tabular('Q2Vals', with_min_and_max=True) 
+            #logger.log_tabular('Q2Vals', with_min_and_max=True) 
             logger.log_tabular('VVals', with_min_and_max=True) 
             logger.log_tabular('LogPi', with_min_and_max=True)
             logger.log_tabular('LossPi', average_only=True)
