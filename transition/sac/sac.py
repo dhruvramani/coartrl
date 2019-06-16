@@ -247,6 +247,7 @@ def sac(env, test_env, primitive_pi, actor_critic=core.mlp_actor_critic, ac_kwar
         """
         if t > start_steps:
             a = get_action(o)
+            print('Action(sac.py): ',a)
         else:
             a = env.action_space.sample()
 
