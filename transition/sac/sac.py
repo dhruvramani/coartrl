@@ -179,9 +179,9 @@ def sac(env, test_env, primitive_pi, actor_critic=core.mlp_actor_critic, ac_kwar
     # Soft actor-critic losses
     pi_loss = tf.reduce_mean(alpha * logp_pi - q1_pi) # Ascent, hence negative
     q1_loss = 0.5 * tf.reduce_mean((q_backup - q1)**2)
-    q2_loss = 0.5 * tf.reduce_mean((q_backup - q2)**2)
+    #q2_loss = 0.5 * tf.reduce_mean((q_backup - q2)**2)
     #   v_loss = 0.5 * tf.reduce_mean((v_backup - v)**2)
-    value_loss = q1_loss + q2_loss #+ v_loss
+    value_loss = q1_loss #+ q2_loss #+ v_loss
 
     # Policy train op 
     # (has to be separate from value train op, because q1_pi appears in pi_loss)
@@ -204,7 +204,7 @@ def sac(env, test_env, primitive_pi, actor_critic=core.mlp_actor_critic, ac_kwar
 
     # All ops to call during one training step
     step_ops = [pi_loss, q1_loss, q1, q2, pval_targ, logp_pi, 
-                train_pi_op, train_value_op , q2_loss]# target_update, v_loss, v]
+                train_pi_op, train_value_op]# q2_loss, target_update, v_loss, v]
 
     # Initializing targets to match main variables
     #   target_init = tf.group([tf.assign(v_targ, v_main)
@@ -314,7 +314,7 @@ def sac(env, test_env, primitive_pi, actor_critic=core.mlp_actor_critic, ac_kwar
             logger.log_tabular('TestEpLen', average_only=True)
             logger.log_tabular('TotalEnvInteracts', t)
             logger.log_tabular('Q1Vals', with_min_and_max=True) 
-            logger.log_tabular('Q2Vals', with_min_and_max=True) 
+            #logger.log_tabular('Q2Vals', with_min_and_max=True) 
             logger.log_tabular('VVals', with_min_and_max=True) 
             logger.log_tabular('LogPi', with_min_and_max=True)
             logger.log_tabular('LossPi', average_only=True)
