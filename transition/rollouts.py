@@ -49,6 +49,15 @@ class Rollout(object):
     def get(self):
         return self._history
 
+def clip_reward(r, l=0., u=10.):
+    r = r / 100
+    if(r < l):
+        return l
+    elif (r > u):
+        return u
+    else:
+        return r
+
 def traj_segment_generator_coart(env, primitive_pi, pi, stochastic, config, alpha=0.0, training_inference=False):
     t = 0
     ac = env.action_space.sample()
@@ -113,10 +122,7 @@ def traj_segment_generator_coart(env, primitive_pi, pi, stochastic, config, alph
             klmeanval = float(f.read().split("\n")[0])
         rew = (vpred_p1 - vpred_p) # - klmeanval * alpha  
         
-        if(rew < 0.):
-            rew = 0.
-        elif(rew > 100.):
-            rew = 100.0
+        rew = clip_reward(rew)
 
         rews.append(rew)
         dones.append(done)
