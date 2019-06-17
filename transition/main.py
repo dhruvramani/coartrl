@@ -26,7 +26,7 @@ from util import make_env
 import rollouts 
 
 from sac.sac import sac
-from sac.sac_original import sac as sac_original
+from sac.sac_original import sac_original
 from sac.utils.run_utils import setup_logger_kwargs
 
 def load_model(load_model_path, var_list=None):
@@ -301,7 +301,7 @@ def run(config):
             coarticulation_trpo(env, policy, config)
         elif(config.coart_method == 'sac'):
             coarticulation_sac(env, policy, config)
-        elif(config.coart_method == 'sac_original'):
+        elif(config.coart_method == 'sacorig'):
             run_sac_original(env, config)
     elif config.is_train:
         trainer.train(rollout)
