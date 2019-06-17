@@ -204,7 +204,7 @@ def sac(env, test_env, primitive_pi, actor_critic=core.mlp_actor_critic, ac_kwar
 
     # All ops to call during one training step
     step_ops = [pi_loss, q1_loss, q1, q2, pval_targ, logp_pi, 
-                train_pi_op, train_value_op , q2_loss target_update]#, v_loss, v]
+                train_pi_op, train_value_op , q2_loss]# target_update, v_loss, v]
 
     # Initializing targets to match main variables
     #   target_init = tf.group([tf.assign(v_targ, v_main)
