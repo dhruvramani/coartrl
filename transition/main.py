@@ -26,6 +26,7 @@ from util import make_env
 import rollouts 
 
 from sac.sac import sac
+from sac.sac_original import sac as sac_original
 from sac.utils.run_utils import setup_logger_kwargs
 
 def load_model(load_model_path, var_list=None):
@@ -88,6 +89,12 @@ def coarticulation_sac(env, primitive_pi, config):
 
     print("Training Co-Articulations")
     sac(env, test_env=test_env, primitive_pi=primitive_pi, ac_kwargs=ac_kwargs, alpha=0.0, logger_kwargs=logger_kwargs)
+
+def run_sac_original(env, config):
+    test_env = make_env(config.env, config)
+    logger_kwargs = setup_logger_kwargs(config.sac_exp_name, 0)
+    ac_kwargs = dict(hidden_sizes=[config.sac_hid] * config.sac_l)    
+    sac_original(env, test_env=test_env, ac_kwargs=ac_kwargs, alpha=0.0, logger_kwargs=logger_kwargs)
 
 def run(config):
     sess = U.single_threaded_session(gpu=False)
@@ -294,6 +301,8 @@ def run(config):
             coarticulation_trpo(env, policy, config)
         elif(config.coart_method == 'sac'):
             coarticulation_sac(env, policy, config)
+        elif(config.coart_method == 'sac_original'):
+            run_sac_original(env, config)
     elif config.is_train:
         trainer.train(rollout)
     else:
