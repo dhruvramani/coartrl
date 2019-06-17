@@ -254,7 +254,7 @@ def sac(env, test_env, primitive_pi, actor_critic=core.mlp_actor_critic, ac_kwar
         # Step the env
         env.render()
         o2, r, d, _ = env.step(a)
-        r /= 10
+        r = core.clip_reward(r)
         ep_ret += r
         ep_len += 1
 
