@@ -31,13 +31,14 @@ def clip_but_pass_gradient(x, l=-1., u=1.):
     return x + tf.stop_gradient((u - x)*clip_up + (l - x)*clip_low)
 
 def clip_reward(r, l=0., u=10.):
-    r = r / 100
-    if(r < l):
-        return l
-    elif (r > u):
-        return u
+    if (r < l):
+        return -1
     else:
-        return r
+        r = r / 100
+        if (r < u):
+            return r
+        else:
+            return u
 
 
 """
