@@ -30,7 +30,7 @@ from sac.sac_original import sac_original
 from sac.utils.run_utils import setup_logger_kwargs
 
 def load_model(load_model_path, var_list=None):
-    if os.path.isdir(load_model_path):
+    if os.path.isdir(load_model_path) and len(os.listdir(load_model_path)) != 0:
         ckpt_path = tf.train.latest_checkpoint(load_model_path)
     else:
         ckpt_path = load_model_path
