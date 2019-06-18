@@ -125,7 +125,7 @@ class RLTrainer(object):
         self.vf_var_list = [v for v in all_var_list if v.name.split("/")[2].startswith("vf")]
         self._vf_adam = MpiAdam(self.vf_var_list)
 
-        self.klmean = tf.reduce_mean(primitive_pi.pd.kl(pi.pd))
+        self.primitive_kl = tf.reduce_mean(primitive_pi.pd.kl(pi.pd))
 
         kl_oldnew = oldpi.pd.kl(pi.pd)
         ent = pi.pd.entropy()
@@ -137,13 +137,13 @@ class RLTrainer(object):
 
         ratio = tf.exp(pi.pd.logp(ac) - oldpi.pd.logp(ac))
         pol_surr = tf.reduce_mean(ratio * atarg)
-        pol_loss = pol_surr + pol_entpen
+        pol_loss = pol_surr + pol_entpen # + self.primitive_kl
 
         pol_losses = {'pol_loss': pol_loss,
                       'pol_surr': pol_surr,
                       'pol_entpen': pol_entpen,
                       'kl': mean_kl,
-                      'entropy': mean_ent}
+                      'entropy': mean_ent} #, self.primitive_kl
         if self._is_chef:
             self.summary_name += ['trpo/vf_loss']
             self.summary_name += ['trpo/' + key for key in pol_losses.keys()]
@@ -162,7 +162,7 @@ class RLTrainer(object):
         gvp = tf.add_n([tf.reduce_sum(g*tangent) for (g, tangent) in zipsame(klgrads, tangents)])  # pylint: disable=E1111
         fvp = U.flatgrad(gvp, self.pol_var_list)
 
-        self.compute_klmean = U.function(obs + [ac, atarg], self.klmean)
+        self.compute_primitive_kl = U.function(obs + [ac, atarg], self.primitive_kl)
         self._update_oldpi = U.function([], [], updates=[
             tf.assign(oldv, newv) for (oldv, newv) in zipsame(oldpi.get_variables(), pi.get_variables())])
         self._compute_losses = U.function(obs + [ac, atarg], pol_losses)
@@ -368,9 +368,9 @@ class RLTrainer(object):
             stepsize = 1.0
             thbefore = self._get_flat()
             for _ in range(10):
-                klmeanval = self.compute_klmean(*args)
+                primitive_klval = self.compute_primitive_kl(*args)
                 with open('./klvalue.txt', 'w+') as f:
-                    f.write("{}\n".format(klmeanval))
+                    f.write("{}\n".format(primitive_klval))
 
                 thnew = thbefore + fullstep * stepsize
                 self._set_from_flat(thnew)
