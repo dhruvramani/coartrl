@@ -50,13 +50,14 @@ class Rollout(object):
         return self._history
 
 def clip_reward(r, l=0., u=10.):
-    r = r / 100
-    if(r < l):
-        return l
-    elif (r > u):
-        return u
+    if (r < l):
+        return -1
     else:
-        return r
+        r = r / 100
+        if (r < u):
+            return r
+        else:
+            return u
 
 def traj_segment_generator_coart(env, primitive_pi, pi, stochastic, config, alpha=0.0, training_inference=False):
     t = 0
