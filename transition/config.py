@@ -125,7 +125,7 @@ def argparser():
     # training
     parser.add_argument('--is_train', type=str2bool, default=False)
     parser.add_argument('--load_meta_path', type=str, default=None, help='Only load the meta controller')
-    parser.add_argument('--load_model_path', type=str, default="../../transition/log/JacoToss.toss_coartl_prim")
+    parser.add_argument('--load_model_path', type=str, default=None)
     parser.add_argument('--write_summary_step', type=int, default=5)
     parser.add_argument('--ckpt_save_step', type=int, default=100)
     parser.add_argument('--max_iters', type=int, default=10001)
@@ -204,4 +204,3 @@ def argparser():
         os.environ["DISPLAY"] = ":{}".format(displays[0])
     '''
     return args
-

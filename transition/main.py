@@ -23,7 +23,7 @@ from transition_policy import TransitionPolicy
 from proximity_predictor import ProximityPredictor
 from config import argparser
 from util import make_env
-import rollouts 
+import rollouts
 
 from sac.sac import sac
 from sac.sac_original import sac_original
@@ -34,8 +34,8 @@ def load_model(load_model_path, var_list=None):
         ckpt_path = tf.train.latest_checkpoint(load_model_path)
     else:
         ckpt_path = load_model_path
-        U.initialize()
-        U.save_state(ckpt_path, var_list)
+        #U.initialize()
+        #U.save_state(ckpt_path, var_list)
     if ckpt_path:
         U.load_state(ckpt_path, var_list)
     return ckpt_path
@@ -70,7 +70,7 @@ def coarticulation_trpo(env, primitive_pi, config):
 
     var_list = coart_pi.get_variables() + coart_oldpi.get_variables()
     coart_path = osp.expanduser(osp.join(config.coart_dir, config.coart_name))
-    ckpt_path = load_model(coart_path, var_list)
+    #ckpt_path = load_model(coart_path, var_list)
 
     from trainer_coart import RLTrainer
 
@@ -93,7 +93,7 @@ def coarticulation_sac(env, primitive_pi, config):
 def run_sac_original(env, config):
     test_env = make_env(config.env, config)
     logger_kwargs = setup_logger_kwargs(config.sac_exp_name, 0)
-    ac_kwargs = dict(hidden_sizes=[config.sac_hid] * config.sac_l)    
+    ac_kwargs = dict(hidden_sizes=[config.sac_hid] * config.sac_l)
     sac_original(env, test_env=test_env, ac_kwargs=ac_kwargs, alpha=0.0, logger_kwargs=logger_kwargs)
 
 def run(config):
@@ -273,7 +273,7 @@ def run(config):
     elif config.is_train:
         ckpt_path = tf.train.latest_checkpoint(config.log_dir)
         if config.hrl:
-            ckpt_path = False # NOTE : REMOVE maybe
+            #ckpt_path = False # NOTE : REMOVE maybe
             if ckpt_path:
                 ckpt_path = load_model(ckpt_path)
                 load_buffers(proximity_predictors, ckpt_path)
@@ -313,7 +313,7 @@ def run(config):
 
     env.close()
 
-    '''    
+    '''
     if(policy is not None):
         with open("./policies/prim_pol_{}.pol".format(config.env), "wb") as f:
             pickle.dump(meta_pi, f)
