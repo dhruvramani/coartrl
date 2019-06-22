@@ -117,7 +117,7 @@ def argparser():
                         choices=['sac', 'trpo', 'sacorig'])
     parser.add_argument('--coart_dir', type=str, default='../../transition/log',
                         help='Directory where coarticulation policies are located')
-    parser.add_argument('--coart_name', type=str, default="JacoToss.coartl_exp1/")
+    parser.add_argument('--coart_name', type=str, default="JacoToss.coartl_exp1")
     parser.add_argument('--sac_hid', type=int, default=300)
     parser.add_argument('--sac_l', type=int, default=1)
     parser.add_argument('--sac_exp_name', type=str, default='coart_sac')
@@ -125,7 +125,7 @@ def argparser():
     # training
     parser.add_argument('--is_train', type=str2bool, default=False)
     parser.add_argument('--load_meta_path', type=str, default=None, help='Only load the meta controller')
-    parser.add_argument('--load_model_path', type=str, default=None)
+    parser.add_argument('--load_model_path', type=str, default="../../transition/log/JacoToss.toss_coartl_prim")
     parser.add_argument('--write_summary_step', type=int, default=5)
     parser.add_argument('--ckpt_save_step', type=int, default=100)
     parser.add_argument('--max_iters', type=int, default=10001)
@@ -204,3 +204,4 @@ def argparser():
         os.environ["DISPLAY"] = ":{}".format(displays[0])
     '''
     return args
+
