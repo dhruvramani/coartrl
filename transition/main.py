@@ -69,7 +69,7 @@ def coarticulation_trpo(env, primitive_pi, config):
     config.is_train = True
 
     var_list = coart_pi.get_variables() + coart_oldpi.get_variables()
-    coart_path = osp.expanduser(osp.join(config.coart_dir, config.coart_name))
+    #coart_path = osp.expanduser(osp.join(config.coart_dir, config.coart_name))
     #ckpt_path = load_model(coart_path, var_list)
 
     from trainer_coart import RLTrainer
