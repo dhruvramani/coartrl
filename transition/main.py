@@ -79,7 +79,7 @@ def coarticulation_trpo(env, primitive_pi, config):
 
     if(os.path.isfile(old_policy_path)):
         with open(old_policy_path, 'rb') as handle:
-            old_policy = pickle.dump(handle)
+            old_policy = pickle.load(handle)
 
     from trainer_coart import RLTrainer
 
