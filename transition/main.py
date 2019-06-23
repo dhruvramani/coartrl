@@ -69,8 +69,13 @@ def coarticulation_trpo(env, primitive_pi, config):
     config.is_train = True
 
     var_list = coart_pi.get_variables() + coart_oldpi.get_variables()
-    coart_path = osp.expanduser(osp.join(config.coart_dir, config.coart_name))
-    ckpt_path = load_model(coart_path, var_list)
+    #coart_path = osp.expanduser(osp.join(config.coart_dir, config.coart_name))
+    #ckpt_path = load_model(coart_path, var_list)
+    with open(os.path.join(config.coart_dir, config.coart_name, 'policy.pkl'), 'wb') as handle:
+        policy = pickle.load(handle)
+
+    with open(os.path.join(config.coart_dir, config.coart_name, 'old_policy.pkl'), 'wb') as handle:
+        old_policy = pickle.dump(handle)
 
     from trainer_coart import RLTrainer
 

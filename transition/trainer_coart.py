@@ -250,6 +250,12 @@ class RLTrainer(object):
 
             # log
             if self._is_chef:
+                with open(os.path.join(self._config.coart_dir, self._config.coart_name, 'policy.pkl'), 'wb') as handle:
+                    pickle.dump(self.policy, handle)
+
+                with open(os.path.join(self._config.coart_dir, self._config.coart_name, 'old_policy.pkl'), 'wb') as handle:
+                    pickle.dump(self.old_policy, handle)
+
                 self.ep_stats.add_all_summary_dict(self.writer, info, global_step)
                 t.set_description(desc)
                 global_step = sess.run(self.update_global_step)
