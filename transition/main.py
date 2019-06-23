@@ -74,11 +74,11 @@ def coarticulation_trpo(env, primitive_pi, config):
     policy_path = os.path.join(config.coart_dir, config.coart_name, 'policy.pkl')
     old_policy_path = os.path.join(config.coart_dir, config.coart_name, 'old_policy.pkl')
     if(os.path.isfile(policy_path)):
-        with open(, 'rb') as handle:
+        with open(policy_path, 'rb') as handle:
             policy = pickle.load(handle)
-            
+
     if(os.path.isfile(old_policy_path)):
-        with open(, 'rb') as handle:
+        with open(old_policy_path, 'rb') as handle:
             old_policy = pickle.dump(handle)
 
     from trainer_coart import RLTrainer
