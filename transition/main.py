@@ -65,21 +65,9 @@ def coarticulation_trpo(env, primitive_pi, config):
     coart_pi = PrimitivePolicy(name="%s/coartpi" % primitive_env_name, env=env, ob_env_name=primitive_env_name, config=config)
     coart_oldpi = PrimitivePolicy(name="%s/coart_oldpi" % primitive_env_name, env=env, ob_env_name=primitive_env_name, config=config)
 
-    # BIG TIME HACK - to avoid debugging
-    config.is_train = True
-
     var_list = coart_pi.get_variables() + coart_oldpi.get_variables()
     #coart_path = osp.expanduser(osp.join(config.coart_dir, config.coart_name))
     #ckpt_path = load_model(coart_path, var_list)
-    policy_path = os.path.join(config.coart_dir, config.coart_name, 'policy.pkl')
-    old_policy_path = os.path.join(config.coart_dir, config.coart_name, 'old_policy.pkl')
-    if(os.path.isfile(policy_path)):
-        with open(policy_path, 'rb') as handle:
-            policy = dill.load(handle)
-
-    if(os.path.isfile(old_policy_path)):
-        with open(old_policy_path, 'rb') as handle:
-            old_policy = dill.load(handle)
 
     from trainer_coart import RLTrainer
 

@@ -65,6 +65,10 @@ def traj_segment_generator_coart(env, primitive_pi, pi, stochastic, config, alph
     done = False
     rew = 0.0
     ob = env.reset()
+    was_train = config.is_train
+
+    # BIG TIME HACK - to avoid debugging
+    config.is_train = True
 
     cur_ep_ret = 0
     cur_ep_len = 0
@@ -103,6 +107,10 @@ def traj_segment_generator_coart(env, primitive_pi, pi, stochastic, config, alph
             dones = []
             acs = []
             t = 0
+            
+            # BIG TIME HACK - to avoid debugging
+            config.is_train = True
+            
             vpred = pi.value(ob, stochastic)
         obs.append(ob)
         vpreds.append(vpred)
@@ -161,6 +169,8 @@ def traj_segment_generator_coart(env, primitive_pi, pi, stochastic, config, alph
                 dones = []
                 acs = []
                 t = 0
+
+            config.is_train = was_train
             reward_info = defaultdict(list)
             cur_ep_ret = 0
             cur_ep_len = 0
