@@ -56,9 +56,9 @@ class RLTrainer(object):
         else:
             raise NotImplementedError
 
-        if self._is_chef and self._config.is_train:
-            self.ep_stats = stats(self.summary_name)
-            self.writer = U.file_writer(config.log_dir)
+        #if self._is_chef and self._config.is_train:
+        #    self.ep_stats = stats(self.summary_name)
+        #    self.writer = U.file_writer(config.log_dir)
 
     @contextmanager
     def timed(self, msg):
