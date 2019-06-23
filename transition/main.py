@@ -69,14 +69,16 @@ def coarticulation_trpo(env, primitive_pi, config):
     config.is_train = True
 
     var_list = coart_pi.get_variables() + coart_oldpi.get_variables()
-    coart_path = osp.expanduser(osp.join(config.coart_dir, config.coart_name))
-    ckpt_path = load_model(coart_path, var_list)
-
+    #coart_path = osp.expanduser(osp.join(config.coart_dir, config.coart_name))
+    
     from trainer_coart import RLTrainer
 
     trainer = RLTrainer(env, coart_pi, coart_oldpi, primitive_pi, config)
     # NOTE : Will change the meaning of alpha later
     rollout = rollouts.traj_segment_generator_coart(env, primitive_pi, coart_pi, alpha=1.0, stochastic=not config.is_collect_state, config=config)
+
+    coart_path = tf.train.latest_checkpoint(config.log_dir)
+    ckpt_path = load_model(coart_path, var_list)
 
     print("Training Co-Articulations")
     trainer.train(rollout)

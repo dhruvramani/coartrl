@@ -161,7 +161,7 @@ def argparser():
     parser.add_argument('--vf_iters', type=int, default=5)
 
     # misc
-    parser.add_argument('--prefix', type=str, default="coartl", help='Prefix for training files')
+    parser.add_argument('--prefix', type=str, default="coartl_exp1", help='Prefix for training files')
     parser.add_argument('--render', type=str2bool, default=True, help='Render frames')
     parser.add_argument('--record', type=str2bool, default=False, help='Record video')
     parser.add_argument('--video_prefix', type=str, default=None)
