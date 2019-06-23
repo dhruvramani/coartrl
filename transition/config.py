@@ -113,6 +113,7 @@ def argparser():
 
     # Coarticulation
     parser.add_argument('--is_coart', type=str2bool, default=True)
+    parser.add_argument('--coart_istrain', type=str2bool, default=True)
     parser.add_argument('--coart_method', type=str, default='trpo',
                         choices=['sac', 'trpo', 'sacorig'])
     parser.add_argument('--coart_dir', type=str, default='../../transition/log',

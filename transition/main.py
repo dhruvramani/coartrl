@@ -77,11 +77,14 @@ def coarticulation_trpo(env, primitive_pi, config):
     # NOTE : Will change the meaning of alpha later
     rollout = rollouts.traj_segment_generator_coart(env, primitive_pi, coart_pi, alpha=1.0, stochastic=not config.is_collect_state, config=config)
 
-    #coart_path = tf.train.latest_checkpoint(config.log_dir)
-    #ckpt_path = load_model(coart_path, var_list)
+    coart_path = tf.train.latest_checkpoint(config.log_dir)
+    ckpt_path = load_model(coart_path, var_list)
 
-    print("Training Co-Articulations")
-    trainer.train(rollout)
+    if(config.coart_istrain):
+        print("Training Co-Articulations")
+        trainer.train(rollout)
+    else : 
+        trainer.evaluate(rollout, ckpt_num=ckpt_path.split('/')[-1])
 
 def coarticulation_sac(env, primitive_pi, config):
     ob = env.reset()
