@@ -117,7 +117,7 @@ def argparser():
                         choices=['sac', 'trpo', 'sacorig'])
     parser.add_argument('--coart_dir', type=str, default='../../transition/log',
                         help='Directory where coarticulation policies are located')
-    parser.add_argument('--coart_name', type=str, default="JacoToss.coartl_exp1")
+    parser.add_argument('--coart_name', type=str, default="JacoToss.coartl")
     parser.add_argument('--sac_hid', type=int, default=300)
     parser.add_argument('--sac_l', type=int, default=1)
     parser.add_argument('--sac_exp_name', type=str, default='coart_sac')
