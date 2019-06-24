@@ -58,7 +58,7 @@ def load_buffers(proximity_predictors, ckpt_path):
         else:
             logger.warn('No buffers are available at {}'.format(buffer_path))
 
-def coarticulation_trpo(env, primitive_pi, config, var_list, primitive_rollout):
+def coarticulation_trpo(env, primitive_pi, config, var_list, primitive_rollout, primitive_trainer):
     ob = env.reset()
     rollout = rollouts.Rollout()
     saver = tf.train.Saver()
@@ -80,7 +80,7 @@ def coarticulation_trpo(env, primitive_pi, config, var_list, primitive_rollout):
     ckpt_path = load_model(coart_path, var_list)
 
     print("Testing Primitive")
-    trainer.evaluate(rollout, ckpt_num=ckpt_path.split('/')[-1])
+    primitive_trainer.evaluate(primitive_rollout, ckpt_num=ckpt_path.split('/')[-1])
 
     print("Training Co-Articulations")
     trainer.train(rollout)
@@ -264,7 +264,7 @@ def run(config):
     if is_chef:
         for var in var_list:
             logger.info('{} {}'.format(var.name, tensor_description(var)))
-    if config.is_coart == False :
+    if(config.is_coart == False):
         if config.load_model_path is not None:
             # Load all the network
             if config.is_train:
@@ -302,7 +302,7 @@ def run(config):
 
     if config.is_coart:
         if(config.coart_method == 'trpo'):
-            coarticulation_trpo(env, policy, config, var_list, rollout)
+            coarticulation_trpo(env, policy, config, var_list, rollout, trainer)
         elif(config.coart_method == 'sac'):
             coarticulation_sac(env, policy, config)
         elif(config.coart_method == 'sacorig'):
