@@ -134,7 +134,7 @@ def argparser():
     parser.add_argument('--num_trans_batches', type=int, default=256)
 
     # evalution
-    parser.add_argument('--num_evaluation_run', type=int, default=10)
+    parser.add_argument('--num_evaluation_run', type=int, default=2)
     parser.add_argument('--evaluate_proximity_predictor', type=str2bool, default=False)
     parser.add_argument('--evaluate_all_ckpts', type=str2bool, default=False)
     parser.add_argument('--evaluation_log', type=str2bool, default=True)
