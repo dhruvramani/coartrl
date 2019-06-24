@@ -58,7 +58,7 @@ def load_buffers(proximity_predictors, ckpt_path):
         else:
             logger.warn('No buffers are available at {}'.format(buffer_path))
 
-def coarticulation_trpo(env, primitive_pi, config, var_list):
+def coarticulation_trpo(env, primitive_pi, config, var_list, primitive_rollout):
     ob = env.reset()
     rollout = rollouts.Rollout()
     saver = tf.train.Saver()
@@ -75,17 +75,15 @@ def coarticulation_trpo(env, primitive_pi, config, var_list):
     from trainer_coart import RLTrainer
 
     trainer = RLTrainer(env, coart_pi, coart_oldpi, primitive_pi, config)
-    # NOTE : Will change the meaning of alpha later
     rollout = rollouts.traj_segment_generator_coart(env, primitive_pi, coart_pi, alpha=1.0, stochastic=not config.is_collect_state, config=config)
 
-    #coart_path = tf.train.latest_checkpoint(config.log_dir)
     ckpt_path = load_model(coart_path, var_list)
 
-    if(config.coart_istrain):
-        print("Training Co-Articulations")
-        trainer.train(rollout)
-    else : 
-        trainer.evaluate(rollout, ckpt_num=ckpt_path.split('/')[-1])
+    print("Testing Primitive")
+    trainer.evaluate(rollout, ckpt_num=ckpt_path.split('/')[-1])
+
+    print("Training Co-Articulations")
+    trainer.train(rollout)
 
 def coarticulation_sac(env, primitive_pi, config):
     ob = env.reset()
@@ -304,7 +302,7 @@ def run(config):
 
     if config.is_coart:
         if(config.coart_method == 'trpo'):
-            coarticulation_trpo(env, policy, config, var_list)
+            coarticulation_trpo(env, policy, config, var_list, rollout)
         elif(config.coart_method == 'sac'):
             coarticulation_sac(env, policy, config)
         elif(config.coart_method == 'sacorig'):

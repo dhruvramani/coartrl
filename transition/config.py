@@ -113,7 +113,6 @@ def argparser():
 
     # Coarticulation
     parser.add_argument('--is_coart', type=str2bool, default=True)
-    parser.add_argument('--coart_istrain', type=str2bool, default=True)
     parser.add_argument('--coart_method', type=str, default='trpo',
                         choices=['sac', 'trpo', 'sacorig'])
     parser.add_argument('--coart_dir', type=str, default='../../transition/log',
@@ -128,7 +127,7 @@ def argparser():
     parser.add_argument('--load_meta_path', type=str, default=None, help='Only load the meta controller')
     parser.add_argument('--load_model_path', type=str, default="../../transition/log/JacoToss.toss_coartl_prim")
     parser.add_argument('--write_summary_step', type=int, default=5)
-    parser.add_argument('--ckpt_save_step', type=int, default=100)
+    parser.add_argument('--ckpt_save_step', type=int, default=10)
     parser.add_argument('--max_iters', type=int, default=10001)
     parser.add_argument('--num_rollouts', type=int, default=10000)
     parser.add_argument('--num_batches', type=int, default=32)
