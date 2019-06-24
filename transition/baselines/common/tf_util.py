@@ -254,6 +254,7 @@ def file_writer(dir_path):
 def load_state(fname, var_list=None):
     saver = tf.train.Saver(var_list=var_list)
     saver.restore(get_session(), fname)
+    print("Loaded from ", fname)
 
 def save_state(fname, var_list=None):
     os.makedirs(fname, exist_ok=True)

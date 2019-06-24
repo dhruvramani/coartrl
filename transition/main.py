@@ -58,9 +58,10 @@ def load_buffers(proximity_predictors, ckpt_path):
         else:
             logger.warn('No buffers are available at {}'.format(buffer_path))
 
-def coarticulation_trpo(env, primitive_pi, config):
+def coarticulation_trpo(env, primitive_pi, config, var_list):
     ob = env.reset()
     rollout = rollouts.Rollout()
+    saver = tf.train.Saver()
     primitive_env_name = primitive_pi.ob_env_name
     coart_pi = PrimitivePolicy(name="%s/coartpi" % primitive_env_name, env=env, ob_env_name=primitive_env_name, config=config)
     coart_oldpi = PrimitivePolicy(name="%s/coart_oldpi" % primitive_env_name, env=env, ob_env_name=primitive_env_name, config=config)
@@ -68,8 +69,8 @@ def coarticulation_trpo(env, primitive_pi, config):
     # BIG TIME HACK - to avoid debugging
     config.is_train = True
 
-    var_list = coart_pi.get_variables() + coart_oldpi.get_variables()
-    #coart_path = osp.expanduser(osp.join(config.coart_dir, config.coart_name))
+    var_list = var_list + coart_pi.get_variables() + coart_oldpi.get_variables()
+    coart_path = osp.expanduser(osp.join(config.coart_dir, config.coart_name))
     
     from trainer_coart import RLTrainer
 
@@ -77,7 +78,7 @@ def coarticulation_trpo(env, primitive_pi, config):
     # NOTE : Will change the meaning of alpha later
     rollout = rollouts.traj_segment_generator_coart(env, primitive_pi, coart_pi, alpha=1.0, stochastic=not config.is_collect_state, config=config)
 
-    coart_path = tf.train.latest_checkpoint(config.log_dir)
+    #coart_path = tf.train.latest_checkpoint(config.log_dir)
     ckpt_path = load_model(coart_path, var_list)
 
     if(config.coart_istrain):
@@ -265,45 +266,45 @@ def run(config):
     if is_chef:
         for var in var_list:
             logger.info('{} {}'.format(var.name, tensor_description(var)))
-
-    if config.load_model_path is not None:
-        # Load all the network
-        if config.is_train:
-            ckpt_path = load_model(config.load_model_path)
-            if config.hrl:
-                load_buffers(proximity_predictors, ckpt_path)
-        else:
-            ckpt_path = load_model(config.load_model_path, var_list)
-        logger.info('* Load all policies from checkpoint: {}'.format(ckpt_path))
-    elif config.is_train:
-        ckpt_path = tf.train.latest_checkpoint(config.log_dir)
-        if config.hrl:
-            #ckpt_path = False # NOTE : REMOVE maybe
-            if ckpt_path:
-                ckpt_path = load_model(ckpt_path)
-                load_buffers(proximity_predictors, ckpt_path)
+    if config.is_coart == False :
+        if config.load_model_path is not None:
+            # Load all the network
+            if config.is_train:
+                ckpt_path = load_model(config.load_model_path)
+                if config.hrl:
+                    load_buffers(proximity_predictors, ckpt_path)
             else:
-                # Only load the primitives
-                for (primitive_name, primitive_pi) in zip(config.primitive_paths, primitive_pis):
-                    var_list = primitive_pi.get_variables()
-                    if var_list:
-                        primitive_path = osp.expanduser(osp.join(config.primitive_dir, primitive_name))
-                        ckpt_path = load_model(primitive_path, var_list)
-                        logger.info("* Load module ({}) from {}".format(primitive_name, ckpt_path))
-                    else:
-                        logger.info("* Hard-coded module ({})".format(primitive_name))
-            logger.info("Loading modules is done.")
+                ckpt_path = load_model(config.load_model_path, var_list)
+            logger.info('* Load all policies from checkpoint: {}'.format(ckpt_path))
+        elif config.is_train:
+            ckpt_path = tf.train.latest_checkpoint(config.log_dir)
+            if config.hrl:
+                #ckpt_path = False # NOTE : REMOVE maybe
+                if ckpt_path:
+                    ckpt_path = load_model(ckpt_path)
+                    load_buffers(proximity_predictors, ckpt_path)
+                else:
+                    # Only load the primitives
+                    for (primitive_name, primitive_pi) in zip(config.primitive_paths, primitive_pis):
+                        var_list = primitive_pi.get_variables()
+                        if var_list:
+                            primitive_path = osp.expanduser(osp.join(config.primitive_dir, primitive_name))
+                            ckpt_path = load_model(primitive_path, var_list)
+                            logger.info("* Load module ({}) from {}".format(primitive_name, ckpt_path))
+                        else:
+                            logger.info("* Hard-coded module ({})".format(primitive_name))
+                logger.info("Loading modules is done.")
+            else:
+                if ckpt_path:
+                    ckpt_path = load_model(ckpt_path)
         else:
-            if ckpt_path:
-                ckpt_path = load_model(ckpt_path)
-    else:
-        logger.info('[!] Checkpoint for evaluation is not provided.')
-        ckpt_path = load_model(config.log_dir, var_list)
-        logger.info("* Load all policies from checkpoint: {}".format(ckpt_path))
+            logger.info('[!] Checkpoint for evaluation is not provided.')
+            ckpt_path = load_model(config.log_dir, var_list)
+            logger.info("* Load all policies from checkpoint: {}".format(ckpt_path))
 
     if config.is_coart:
         if(config.coart_method == 'trpo'):
-            coarticulation_trpo(env, policy, config)
+            coarticulation_trpo(env, policy, config, var_list)
         elif(config.coart_method == 'sac'):
             coarticulation_sac(env, policy, config)
         elif(config.coart_method == 'sacorig'):
