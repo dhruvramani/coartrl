@@ -58,7 +58,7 @@ def load_buffers(proximity_predictors, ckpt_path):
         else:
             logger.warn('No buffers are available at {}'.format(buffer_path))
 
-def coarticulation_trpo(env, primitive_pi, config, var_list, primitive_rollout, primitive_trainer):
+def coarticulation_trpo(env, primitive_pi, config, prim_props):
     ob = env.reset()
     rollout = rollouts.Rollout()
     saver = tf.train.Saver()
@@ -69,7 +69,7 @@ def coarticulation_trpo(env, primitive_pi, config, var_list, primitive_rollout, 
     # BIG TIME HACK - to avoid debugging
     config.is_train = True
 
-    var_list = var_list + coart_pi.get_variables() + coart_oldpi.get_variables()
+    var_list = prim_props[0] + coart_pi.get_variables() + coart_oldpi.get_variables()
     coart_path = osp.expanduser(osp.join(config.coart_dir, config.coart_name))
     
     from trainer_coart import RLTrainer
@@ -81,7 +81,7 @@ def coarticulation_trpo(env, primitive_pi, config, var_list, primitive_rollout, 
         ckpt_path = load_model(coart_path, var_list)
 
     print("Testing Primitive")
-    primitive_trainer.evaluate(primitive_rollout, ckpt_num=ckpt_path.split('/')[-1])
+    prim_props[2].evaluate(prim_props[1], ckpt_num=prim_props[3].split('/')[-1])
 
     print("Training Co-Articulations")
     trainer.train(rollout)
@@ -303,7 +303,7 @@ def run(config):
 
     if config.is_coart:
         if(config.coart_method == 'trpo'):
-            coarticulation_trpo(env, policy, config, var_list, rollout, trainer)
+            coarticulation_trpo(env, policy, config, [var_list, rollout, trainer, ckpt_path])
         elif(config.coart_method == 'sac'):
             coarticulation_sac(env, policy, config)
         elif(config.coart_method == 'sacorig'):
