@@ -85,8 +85,12 @@ def coarticulation_trpo(env, primitive_pi, config, prim_props):
         prim_props[3] = ckpt_path
     prim_props[2].evaluate(prim_props[1], ckpt_num=prim_props[3].split('/')[-1])
 
-    print("Training Co-Articulations")
-    trainer.train(rollout)
+    if(config.coart_train):
+        print("Training Co-Articulations")
+        trainer.train(rollout)
+
+    print("Testing Coart")
+    trainer.evaluate(rollout, ckpt_num=ckpt_path.split('/')[-1])
 
 def coarticulation_sac(env, primitive_pi, config):
     ob = env.reset()
