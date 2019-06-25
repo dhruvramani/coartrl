@@ -264,7 +264,7 @@ def run(config):
     if is_chef:
         for var in var_list:
             logger.info('{} {}'.format(var.name, tensor_description(var)))
-    if(config.is_coart == False):
+    if(config.coart_start or not config.is_coart):
         if config.load_model_path is not None:
             # Load all the network
             if config.is_train:
