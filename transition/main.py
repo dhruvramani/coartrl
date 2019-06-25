@@ -81,6 +81,8 @@ def coarticulation_trpo(env, primitive_pi, config, prim_props):
         ckpt_path = load_model(coart_path, var_list)
 
     print("Testing Primitive")
+    if(prim_props[3] == None):
+        prim_props[3] = ckpt_path
     prim_props[2].evaluate(prim_props[1], ckpt_num=prim_props[3].split('/')[-1])
 
     print("Training Co-Articulations")
@@ -130,6 +132,7 @@ def run(config):
     networks = []
 
     # build models
+    ckpt_path = None
     meta_pi, primitive_pis, policy = None, None, None
     if config.hrl:
         assert config.primitive_envs is not None and config.primitive_paths is not None
