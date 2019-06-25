@@ -132,13 +132,13 @@ class RLTrainer(object):
         ent = pi.pd.entropy()
         mean_kl = tf.reduce_mean(kl_oldnew)
         mean_ent = tf.reduce_mean(ent)
-        pol_entpen = -self._config.entcoeff * mean_ent
+        pol_entpen = - self._config.entcoeff * mean_ent
 
         vf_loss = tf.reduce_mean(tf.square(pi.vpred - ret))
 
         ratio = tf.exp(pi.pd.logp(ac) - oldpi.pd.logp(ac))
         pol_surr = tf.reduce_mean(ratio * atarg)
-        pol_loss = pol_surr + pol_entpen + self.primitive_kl
+        pol_loss = pol_surr + pol_entpen + self._config.coart_alpha * self.primitive_kl
 
         pol_losses = {'pol_loss': pol_loss,
                       'pol_surr': pol_surr,

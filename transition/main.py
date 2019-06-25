@@ -75,7 +75,7 @@ def coarticulation_trpo(env, primitive_pi, config, prim_props):
     from trainer_coart import RLTrainer
 
     trainer = RLTrainer(env, coart_pi, coart_oldpi, primitive_pi, config)
-    rollout = rollouts.traj_segment_generator_coart(env, primitive_pi, coart_pi, alpha=1.0, stochastic=not config.is_collect_state, config=config)
+    rollout = rollouts.traj_segment_generator_coart(env, primitive_pi, coart_pi, alpha=config.coart_alpha, stochastic=not config.is_collect_state, config=config)
 
     if(not config.coart_start):
         ckpt_path = load_model(coart_path, var_list)
