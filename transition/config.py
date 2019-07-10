@@ -119,7 +119,7 @@ def argparser():
                         help='Directory where coarticulation policies are located')
     parser.add_argument('--coart_start', type=str2bool, default=False)
     parser.add_argument('--coart_train', type=str2bool, default=True)
-    parser.add_argument('--coart_alpha', type=float, default=0.5)
+    parser.add_argument('--coart_alpha', type=float, default=10.0)
     parser.add_argument('--coart_name', type=str, default="JacoToss.coartl_exp_rkl")
     parser.add_argument('--sac_hid', type=int, default=300)
     parser.add_argument('--sac_l', type=int, default=1)
