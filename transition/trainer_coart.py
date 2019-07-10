@@ -138,14 +138,14 @@ class RLTrainer(object):
 
         ratio = tf.exp(pi.pd.logp(ac) - oldpi.pd.logp(ac))
         pol_surr = tf.reduce_mean(ratio * atarg)
-        pol_loss = pol_surr + pol_entpen #+ self._config.coart_alpha * self.primitive_kl
+        pol_loss = pol_surr + pol_entpen + self._config.coart_alpha * self.primitive_kl
 
         pol_losses = {'pol_loss': pol_loss,
                       'pol_surr': pol_surr,
                       'pol_entpen': pol_entpen,
                       'kl': mean_kl,
-                      'entropy': mean_ent, }
-                      #'primitive_kl' : self.primitive_kl}
+                      'entropy': mean_ent, #}
+                      'primitive_kl' : self.primitive_kl}
         if self._is_chef:
             self.summary_name += ['trpo/vf_loss']
             self.summary_name += ['trpo/' + key for key in pol_losses.keys()]
