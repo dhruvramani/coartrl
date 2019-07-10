@@ -59,6 +59,26 @@ def clip_reward(r, l=0., u=10.):
         else:
             return u
 
+def add_advantage_rl(seg, gamma, lam):
+    print(seg.keys())
+    done = seg["done"]
+    rew = seg["rew"]
+    vpred = np.append(seg["vpred"], seg["next_vpred"])
+    T = len(rew)
+    seg["adv"] = gaelam = np.empty(T, 'float32')
+    lastgaelam = 0
+    for t in reversed(range(T)):
+        nonterminal = 1 - done[t]
+        delta = rew[t] + gamma * vpred[t + 1] * nonterminal - vpred[t]
+        lastgaelam = delta + gamma * lam * nonterminal * lastgaelam
+        print(lastgaelam)
+        gaelam[t] = lastgaelam
+    seg["tdlamret"] = seg["adv"] + seg["vpred"]
+
+    assert np.isfinite(seg["vpred"]).all()
+    assert np.isfinite(seg["next_vpred"]).all()
+    assert np.isfinite(seg["adv"]).all()
+
 def traj_segment_generator_coart(env, primitive_pi, pi, stochastic, config, alpha=0.0, training_inference=False):
     t = 0
     ac = env.action_space.sample()
@@ -464,28 +484,6 @@ def add_advantage_meta(seg, gamma, lam, meta_duration):
     seg["meta_tdlamret"] = seg["meta_adv"] + seg["meta_vpred"]
     assert np.isfinite(seg["meta_vpred"]).all()
     assert np.isfinite(seg["meta_adv"]).all()
-
-
-def add_advantage_rl(seg, gamma, lam):
-    print(seg.keys())
-    done = seg["done"]
-    rew = seg["rew"]
-    vpred = np.append(seg["vpred"], seg["next_vpred"])
-    T = len(rew)
-    seg["adv"] = gaelam = np.empty(T, 'float32')
-    lastgaelam = 0
-    for t in reversed(range(T)):
-        nonterminal = 1 - done[t]
-        delta = rew[t] + gamma * vpred[t + 1] * nonterminal - vpred[t]
-        lastgaelam = delta + gamma * lam * nonterminal * lastgaelam
-        print(lastgaelam)
-        gaelam[t] = lastgaelam
-    seg["tdlamret"] = seg["adv"] + seg["vpred"]
-
-    assert np.isfinite(seg["vpred"]).all()
-    assert np.isfinite(seg["next_vpred"]).all()
-    assert np.isfinite(seg["adv"]).all()
-
 
 def prepare_all_rolls(seg, gamma, lam, num_primitives, use_trans,
                       trans_use_task_reward, config):
