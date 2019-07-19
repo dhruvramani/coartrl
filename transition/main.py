@@ -114,8 +114,8 @@ def coarticulation_new(env, config):
     p2_old = PrimitivePolicy(name="%s/oldpi" % config.primitive_envs[1], env=env, ob_env_name=config.primitive_envs[1], config=config)
 
     p1_vars, p2_vars = p1.get_variables() + p1_old.get_variables(), p2.get_variables() + p2_old.get_variables()
-    p1_path = osp.expanduser(osp.join(config.log_dir, config.primitive_envs[0]))
-    p2_path = osp.expanduser(osp.join(config.log_dir, config.primitive_envs[1]))
+    p1_path = osp.expanduser(osp.join(config.primitive_dir, config.primitive_paths[0]))
+    p2_path = osp.expanduser(osp.join(config.primitive_dir, config.primitive_paths[1]))
 
     print(p1_path, "\n", p2_path)
     p1c_path = load_model(p1_path, p1_vars)
