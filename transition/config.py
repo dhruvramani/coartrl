@@ -113,8 +113,8 @@ def argparser():
 
     # Coarticulation
     parser.add_argument('--is_coart', type=str2bool, default=True)
-    parser.add_argument('--coart_method', type=str, default='trpo',
-                        choices=['sac', 'trpo', 'sacorig'])
+    parser.add_argument('--coart_method', type=str, default='new',
+                        choices=['sac', 'trpo', 'sacorig', 'new'])
     parser.add_argument('--coart_dir', type=str, default='../../transition/log',
                         help='Directory where coarticulation policies are located')
     parser.add_argument('--coart_start', type=str2bool, default=False)

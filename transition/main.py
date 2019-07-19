@@ -173,6 +173,10 @@ def run(config):
 
     networks = []
 
+    if(config.is_coart and config.coart_method == 'new'):
+        coarticulation_new(env, config)
+        return 
+
     # build models
     ckpt_path = None
     meta_pi, primitive_pis, policy = None, None, None
