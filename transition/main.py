@@ -60,8 +60,6 @@ def load_buffers(proximity_predictors, ckpt_path):
 
 def coarticulation_trpo(env, primitive_pi, config, prim_props):
     ob = env.reset()
-    rollout = rollouts.Rollout()
-    saver = tf.train.Saver()
     primitive_env_name = primitive_pi.ob_env_name
     coart_pi = PrimitivePolicy(name="%s/coartpi" % primitive_env_name, env=env, ob_env_name=primitive_env_name, config=config)
     coart_oldpi = PrimitivePolicy(name="%s/coart_oldpi" % primitive_env_name, env=env, ob_env_name=primitive_env_name, config=config)
@@ -106,6 +104,46 @@ def run_sac_original(env, config):
     logger_kwargs = setup_logger_kwargs(config.sac_exp_name, 0)
     ac_kwargs = dict(hidden_sizes=[config.sac_hid] * config.sac_l)
     sac_original(env, test_env=test_env, ac_kwargs=ac_kwargs, alpha=0.0, logger_kwargs=logger_kwargs)
+
+def coarticulation_new(env, config):
+    ob = env.reset()
+
+    p1 = PrimitivePolicy(name="%s/pi" % config.primitive_envs[0], env=env, ob_env_name=config.primitive_envs[0], config=config)
+    p1_old = PrimitivePolicy(name="%s/oldpi" % config.primitive_envs[0], env=env, ob_env_name=config.primitive_envs[0], config=config)
+    p2 = PrimitivePolicy(name="%s/pi" % config.primitive_envs[1], env=env, ob_env_name=config.primitive_envs[1], config=config)
+    p2_old = PrimitivePolicy(name="%s/oldpi" % config.primitive_envs[1], env=env, ob_env_name=config.primitive_envs[1], config=config)
+
+    p1_vars, p2_vars = p1.get_variables() + p1_old.get_variables(), p2.get_variables() + p2_old.get_variables()
+    p1_path = osp.expanduser(osp.join(config.log_dir, config.primitive_envs[0]))
+    p2_path = osp.expanduser(osp.join(config.log_dir, config.primitive_envs[1]))
+
+    p1_path = load_model(p1_path, p1_vars)
+    p2_path = load_model(p2_path, p2_vars)
+
+    # NOTE : CHANGE THIS TO SAC
+    coart_pi = PrimitivePolicy(name="%s/coartpi" % primitive_env_name, env=env, ob_env_name=primitive_env_name, config=config)
+    coart_oldpi = PrimitivePolicy(name="%s/coart_oldpi" % primitive_env_name, env=env, ob_env_name=primitive_env_name, config=config)
+
+    var_list = coart_pi.get_variables() + coart_oldpi.get_variables()
+    coart_path = osp.expanduser(osp.join(config.coart_dir, config.coart_name))
+
+    # BIG TIME HACK - to avoid debugging
+    config.is_train = True
+    initial_rollouts = config.num_rollouts
+    config.num_rollouts = 1
+
+    from trainer_rl import RLTrainer
+    trainer = RLTrainer(env, p1, p1_old, config)
+
+    rollout = rollouts.traj_segment_generator_rl(env, p1, stochastic=not config.is_collect_state, config=config)
+
+    #if(not config.coart_start):
+    #    coart_path = load_model(coart_path, var_list)
+
+    trainer.evaluate(rollout, ckpt_num=ckpt_path.split('/')[-1])
+
+    config.num_rollouts = initial_rollouts
+
 
 def run(config):
     sess = U.single_threaded_session(gpu=False)

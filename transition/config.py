@@ -120,7 +120,7 @@ def argparser():
     parser.add_argument('--coart_start', type=str2bool, default=False)
     parser.add_argument('--coart_train', type=str2bool, default=True)
     parser.add_argument('--coart_alpha', type=float, default=10.0)
-    parser.add_argument('--coart_name', type=str, default="JacoToss.coartl_exp_rkl")
+    parser.add_argument('--coart_name', type=str, default="JacoToss.coartl_exp_new")
     parser.add_argument('--sac_hid', type=int, default=300)
     parser.add_argument('--sac_l', type=int, default=1)
     parser.add_argument('--sac_exp_name', type=str, default='coart_sac')
@@ -164,7 +164,7 @@ def argparser():
     parser.add_argument('--vf_iters', type=int, default=5)
 
     # misc
-    parser.add_argument('--prefix', type=str, default="coartl_exp_rkl", help='Prefix for training files')
+    parser.add_argument('--prefix', type=str, default="coartl_exp_new", help='Prefix for training files')
     parser.add_argument('--render', type=str2bool, default=True, help='Render frames')
     parser.add_argument('--record', type=str2bool, default=False, help='Record video')
     parser.add_argument('--video_prefix', type=str, default=None)

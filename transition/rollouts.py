@@ -467,7 +467,8 @@ def traj_segment_generator_rl(env, pi, stochastic, config, training_inference=Fa
             cur_ep_ret = 0
             cur_ep_len = 0
             visual_obs = []
-            ob = env.reset()
+            if(config.num_rollouts > 1):
+                ob = env.reset()
 
 
 def add_advantage_meta(seg, gamma, lam, meta_duration):
