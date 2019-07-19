@@ -117,13 +117,12 @@ def coarticulation_new(env, config):
     p1_path = osp.expanduser(osp.join(config.primitive_dir, config.primitive_paths[0]))
     p2_path = osp.expanduser(osp.join(config.primitive_dir, config.primitive_paths[1]))
 
-    print(p1_path, "\n", p2_path)
     p1c_path = load_model(p1_path, p1_vars)
     p2c_path = load_model(p2_path, p2_vars)
 
     # NOTE : CHANGE THIS TO SAC
-    coart_pi = PrimitivePolicy(name="%s/coartpi" % primitive_env_name, env=env, ob_env_name=primitive_env_name, config=config)
-    coart_oldpi = PrimitivePolicy(name="%s/coart_oldpi" % primitive_env_name, env=env, ob_env_name=primitive_env_name, config=config)
+    coart_pi = PrimitivePolicy(name="%s/coartpi" % config.primitive_envs[1], env=env, ob_env_name=config.primitive_envs[1], config=config)
+    coart_oldpi = PrimitivePolicy(name="%s/coart_oldpi" % config.primitive_envs[1], env=env, ob_env_name=config.primitive_envs[1], config=config)
 
     var_list = coart_pi.get_variables() + coart_oldpi.get_variables()
     coart_path = osp.expanduser(osp.join(config.coart_dir, config.coart_name))
