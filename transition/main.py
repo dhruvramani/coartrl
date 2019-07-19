@@ -127,8 +127,6 @@ def coarticulation_new(env, config):
     var_list = coart_pi.get_variables() + coart_oldpi.get_variables()
     coart_path = osp.expanduser(osp.join(config.coart_dir, config.coart_name))
 
-    # BIG TIME HACK - to avoid debugging
-    config.is_train = True
     initial_rollouts = config.num_rollouts
     config.num_rollouts = 1
 
@@ -141,8 +139,9 @@ def coarticulation_new(env, config):
     #    coart_path = load_model(coart_path, var_list)
 
     trainer.evaluate(rollout, ckpt_num=p1c_path.split('/')[-1])
-
     config.num_rollouts = initial_rollouts
+
+    run_sac_original(env, config)
 
 
 def run(config):
