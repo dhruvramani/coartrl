@@ -117,8 +117,9 @@ def coarticulation_new(env, config):
     p1_path = osp.expanduser(osp.join(config.log_dir, config.primitive_envs[0]))
     p2_path = osp.expanduser(osp.join(config.log_dir, config.primitive_envs[1]))
 
-    p1_path = load_model(p1_path, p1_vars)
-    p2_path = load_model(p2_path, p2_vars)
+    print(p1_path, "\n", p2_path)
+    p1c_path = load_model(p1_path, p1_vars)
+    p2c_path = load_model(p2_path, p2_vars)
 
     # NOTE : CHANGE THIS TO SAC
     coart_pi = PrimitivePolicy(name="%s/coartpi" % primitive_env_name, env=env, ob_env_name=primitive_env_name, config=config)
@@ -140,7 +141,7 @@ def coarticulation_new(env, config):
     #if(not config.coart_start):
     #    coart_path = load_model(coart_path, var_list)
 
-    trainer.evaluate(rollout, ckpt_num=ckpt_path.split('/')[-1])
+    trainer.evaluate(rollout, ckpt_num=p1c_path.split('/')[-1])
 
     config.num_rollouts = initial_rollouts
 
