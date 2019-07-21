@@ -103,7 +103,7 @@ def run_sac_original(env, config):
     test_env = make_env(config.env, config)
     logger_kwargs = setup_logger_kwargs(config.sac_exp_name, 0)
     ac_kwargs = dict(hidden_sizes=[config.sac_hid] * config.sac_l)
-    sac_original(env, test_env=test_env, ac_kwargs=ac_kwargs, alpha=0.0, logger_kwargs=logger_kwargs)
+    sac_original(env, test_env=test_env, ac_kwargs=ac_kwargs, alpha=0.0, logger_kwargs=logger_kwargs, render=config.render)
 
 def coarticulation_new(env, config):
     ob = env.reset()
@@ -132,12 +132,10 @@ def coarticulation_new(env, config):
 
     from trainer_rl import RLTrainer
     trainer = RLTrainer(env, p1, p1_old, config)
-
     rollout = rollouts.traj_segment_generator_rl(env, p1, stochastic=not config.is_collect_state, config=config)
 
     #if(not config.coart_start):
     #    coart_path = load_model(coart_path, var_list)
-
     trainer.evaluate(rollout, ckpt_num=p1c_path.split('/')[-1])
     config.num_rollouts = initial_rollouts
 
@@ -174,7 +172,7 @@ def run(config):
 
     if(config.is_coart and config.coart_method == 'new'):
         coarticulation_new(env, config)
-        return 
+        return
 
     # build models
     ckpt_path = None

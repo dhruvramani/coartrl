@@ -60,7 +60,7 @@ def clip_reward(r, l=0., u=10.):
             return u
 
 def add_advantage_rl(seg, gamma, lam):
-    print(seg.keys())
+    # print(seg.keys())
     done = seg["done"]
     rew = seg["rew"]
     vpred = np.append(seg["vpred"], seg["next_vpred"])
@@ -71,7 +71,7 @@ def add_advantage_rl(seg, gamma, lam):
         nonterminal = 1 - done[t]
         delta = rew[t] + gamma * vpred[t + 1] * nonterminal - vpred[t]
         lastgaelam = delta + gamma * lam * nonterminal * lastgaelam
-        print(lastgaelam)
+        # print(lastgaelam)
         gaelam[t] = lastgaelam
     seg["tdlamret"] = seg["adv"] + seg["vpred"]
 
@@ -132,7 +132,10 @@ def traj_segment_generator_coart(env, primitive_pi, pi, stochastic, config, alph
             env, cur_ep_len, cur_ep_ret, config.rl_method, config.render,
             config.record, caption_off=config.video_caption_off)
         visual_obs.append(vob)
-
+        
+        # print('#'*50)
+        # print('Action',ac)
+        # print('#'*50)
         ob, rew, done, info = env.step(ac)
         for key, value in info.items():
             reward_info[key].append(value)
