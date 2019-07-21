@@ -192,7 +192,8 @@ def sac_original(env, test_env, actor_critic=core.mlp_actor_critic, ac_kwargs=di
             o, r, d, ep_ret, ep_len = test_env.reset(), 0, False, 0, 0
             while not(d or (ep_len == max_ep_len)):
                 # Take deterministic actions at test time
-                o, r, d, _ = test_env.step(get_action(o, True))
+                action = get_action(o, deterministic=True)
+                o, r, d, _ = test_env.step(action)
                 ep_ret += r
                 ep_len += 1
             logger.store(TestEpRet=ep_ret, TestEpLen=ep_len)
@@ -214,12 +215,13 @@ def sac_original(env, test_env, actor_critic=core.mlp_actor_critic, ac_kwargs=di
         else:
             a = env.action_space.sample()
         # Step the env
-        print('Action:',a)
-        print('#'*50)
+        # print('Action:',a)
+        # print('#'*50)
         if render:
             env.render()
         o2, r, d, _ = env.step(a)
         r = core.clip_reward(r)
+        # print(a,r)
         ep_ret += r
         ep_len += 1
 
@@ -256,7 +258,7 @@ def sac_original(env, test_env, actor_critic=core.mlp_actor_critic, ac_kwargs=di
 
             logger.store(EpRet=ep_ret, EpLen=ep_len)
             o, r, d, ep_ret, ep_len = env.reset(), 0, False, 0, 0
-
+            print('DONE')
 
         # End of epoch wrap-up
         if t > 0 and t % steps_per_epoch == 0:
