@@ -123,29 +123,40 @@ def coarticulation_new(env, config):
     p1_path = osp.expanduser(osp.join(config.primitive_dir, config.primitive_paths[0]))
     p2_path = osp.expanduser(osp.join(config.primitive_dir, config.primitive_paths[1]))
 
-    p1c_path = load_model(p1_path, p1_vars)
-    p2c_path = load_model(p2_path, p2_vars)
-
     # NOTE : CHANGE THIS TO SAC
-    coart_pi = PrimitivePolicy(name="%s/coartpi" % config.primitive_envs[1], env=env, ob_env_name=config.primitive_envs[1], config=config)
-    coart_oldpi = PrimitivePolicy(name="%s/coart_oldpi" % config.primitive_envs[1], env=env, ob_env_name=config.primitive_envs[1], config=config)
+    #coart_pi = PrimitivePolicy(name="%s/coartpi" % config.primitive_envs[1], env=env, ob_env_name=config.primitive_envs[1], config=config)
+    #coart_oldpi = PrimitivePolicy(name="%s/coart_oldpi" % config.primitive_envs[1], env=env, ob_env_name=config.primitive_envs[1], config=config)
 
-    var_list = coart_pi.get_variables() + coart_oldpi.get_variables()
-    coart_path = osp.expanduser(osp.join(config.coart_dir, config.coart_name))
-
-    initial_rollouts = config.num_rollouts
-    config.num_rollouts = 1
+    #var_list = coart_pi.get_variables() + coart_oldpi.get_variables()
+    #coart_path = osp.expanduser(osp.join(config.coart_dir, config.coart_name))
 
     from trainer_rl import RLTrainer
-    trainer = RLTrainer(env, p1, p1_old, config)
-    rollout = rollouts.traj_segment_generator_rl(env, p1, stochastic=not config.is_collect_state, config=config)
+
+    initial_rollouts = config.num_rollouts
+    
+    config.num_rollouts = 20 # NOTE : important, to execute primitive once
+    trainer_p1 = RLTrainer(env, p1, p1_old, config)
+    rollout_p1 = rollouts.traj_segment_generator_rl(env, p1, stochastic=not config.is_collect_state, config=config)
 
     #if(not config.coart_start):
     #    coart_path = load_model(coart_path, var_list)
-    trainer.evaluate(rollout, ckpt_num=p1c_path.split('/')[-1])
-    config.num_rollouts = initial_rollouts
+    
+    p1c_path = load_model(p1_path, p1_vars)
+    trainer_p1.evaluate(rollout_p1, ckpt_num=p1c_path.split('/')[-1])
+    
+    config.num_rollouts = initial_rollouts # NOTE : set it back
 
-    run_sac_original(env, config)
+    # NOTE : Run SAC here
+    #run_sac_original(env, config)
+
+    config.num_rollouts = 20 # NOTE : important, to execute second primitive once
+    trainer_p2 = RLTrainer(env, p2, p2_old, config)
+    rollout_p2 = rollouts.traj_segment_generator_rl(env, p2, stochastic=not config.is_collect_state, config=config)
+
+    p2c_path = load_model(p2_path, p2_vars)
+    trainer_p2.evaluate(rollout_p2, ckpt_num=p2c_path.split('/')[-1])
+    
+    config.num_rollouts = initial_rollouts # NOTE : set it back
 
 
 def run(config):
