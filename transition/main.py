@@ -29,6 +29,8 @@ from sac.sac import sac
 from sac.sac_original import sac_original
 from sac.utils.run_utils import setup_logger_kwargs
 
+from stable_sac import stable_sac
+
 def load_model(load_model_path, var_list=None):
     if os.path.isdir(load_model_path):
         ckpt_path = tf.train.latest_checkpoint(load_model_path)
@@ -105,6 +107,10 @@ def run_sac_original(env, config):
     ac_kwargs = dict(hidden_sizes=[config.sac_hid] * config.sac_l)
     sac_original(env, test_env=test_env, ac_kwargs=ac_kwargs, alpha=0.0, logger_kwargs=logger_kwargs, render=config.render)
 
+def run_stable_sac(env, config):
+    ob = env.reset()
+    stable_sac(env)
+
 def coarticulation_new(env, config):
     ob = env.reset()
 
@@ -172,6 +178,10 @@ def run(config):
 
     if(config.is_coart and config.coart_method == 'new'):
         coarticulation_new(env, config)
+        return
+
+    if(config.is_coart and config.coart_method == 'stablesac'):
+        run_stable_sac(env, config)
         return
 
     # build models
@@ -354,6 +364,8 @@ def run(config):
             coarticulation_sac(env, policy, config)
         elif(config.coart_method == 'sacorig'):
             run_sac_original(env, config)
+        elif(config.coart_method == 'stablesac'):
+            run_stable_sac(env, config)
     elif config.is_train:
         trainer.train(rollout)
     else:
