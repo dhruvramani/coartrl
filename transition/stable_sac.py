@@ -11,4 +11,4 @@ def stable_sac(env):
 	env = DummyVecEnv([lambda: env])
 	model = SAC(MlpPolicy, env, verbose=1)
 	model.learn(total_timesteps=50000, log_interval=10)
-	model.save("sac_pendulum")
+	model.save("sac_jaco")
