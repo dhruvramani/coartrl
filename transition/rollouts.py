@@ -190,6 +190,187 @@ def traj_segment_generator_coart(env, primitive_pi, pi, stochastic, config, alph
             visual_obs = []
             ob = env.reset()
 
+
+def traj_segment_coart(env, primitive_pis, stochastic, config, training_inference=False, proximity_predictors=None):
+    t = 0
+    ac = env.action_space.sample()
+    done = False
+    rew = 0.0
+    ob = env.reset()
+    cur_primitive = -1
+    num_primitives = len(primitive_pis)
+
+    cur_ep_ret = 0
+    cur_ep_len = 0
+
+    # initialize history arrays
+    rollout = Rollout()
+    reward_info = defaultdict(list)
+    ep_reward = defaultdict(list)
+
+    if config.render:
+        cv2.namedWindow(env.spec.id)
+        cv2.moveWindow(env.spec.id, 0, 0)
+
+    # run rollout
+    while True:
+        # meta policy
+        prev_primitive = cur_primitive
+        # cur_primitive_str = env.unwrapped.get_next_primitive(ob, np.array([prev_primitive]))
+        # if cur_primitive_str is not None:
+        #     cur_primitive = [cur_primitive_str in v.lower() for v in config.primitive_envs].index(True)
+        cur_primitive += 1
+        #cur_primitive = cur_primitive % num_primitives
+        print(cur_primitive)
+        # if not config.meta_oracle:
+        #     cur_primitive, meta_vpred = meta_pi.act(ob, np.array([prev_primitive], stochastic))
+        # else:
+        #     cur_primitive_str = env.unwrapped.get_next_primitive(ob, np.array([prev_primitive]))
+        #     if cur_primitive_str is not None:
+        #         cur_primitive = [cur_primitive_str in v.lower() for v in config.primitive_envs].index(True)
+        #     else:
+        #         cur_primitive = prev_primitive
+        #     meta_vpred = 0
+
+        # rollout.add({'meta_ob': ob, 'meta_prev_ac': prev_primitive,
+        #              'meta_ac': cur_primitive, 'meta_vpred': meta_vpred})
+        # meta_rew = 0
+
+        ''' NOTE : Probably put SAC code here ''' 
+        # # transition policy
+        # t_trans = 0
+        # exe_trans = config.use_trans
+        # if config.test_module_net:
+        #     exe_trans = False
+        # if not config.use_trans_between_same_policy and prev_primitive == cur_primitive:
+        #     exe_trans = False
+        # if (config.trans_apply_first_time_step or cur_ep_len > 0) and exe_trans:
+        #     trans_pi = trans_pis[cur_primitive]
+        #     term = False
+        #     if proximity_predictors:
+        #         cur_proximity = 0
+        #         prev_proximity = 0
+
+        #     while not done and t_trans < config.trans_duration:
+        #         ac, vpred, term = trans_pi.act(ob, np.asarray([cur_primitive]), stochastic)
+
+        #         term = term == 1 or t_trans == config.trans_duration - 1
+
+        #         if proximity_predictors:
+        #             cur_proximity = proximity_predictors[cur_primitive].proximity(
+        #                 ob[:proximity_predictors[cur_primitive].observation_shape])[0]
+
+        #         vob = render_frame(env, cur_ep_len, cur_ep_ret,
+        #                            meta_pi.primitive_names[cur_primitive] + ' Transition',
+        #                            config.render, config.record,
+        #                            caption_off=config.video_caption_off)
+        #         rollout.add({'ob': ob, 'vpred': vpred, 'ac': ac, 'is_trans': True,
+        #                      'cur_primitive': cur_primitive, 'prev_primitive': prev_primitive,
+        #                      'term': term * 1.0, 'visual_obs': vob})
+        #         if term:
+        #             t_trans += 1
+        #             rollout.add({'rew': 0.0, 'env_rew': 0.0, 'done': False, 'success': False})
+        #             break
+        #         ob, rew, done, info = env.step(ac)
+        #         meta_rew += rew
+        #         cur_ep_ret += rew
+        #         cur_ep_len += 1
+        #         t_trans += 1
+        #         t += 1
+        #         for key, value in info.items():
+        #             reward_info[key].append(value)
+
+        #         rollout.add({'env_rew': rew, 'done': done, 'success': False})
+
+        #         if proximity_predictors:
+        #             if config.proximity_dense_diff_rew:
+        #                 rollout.add({'rew': cur_proximity - prev_proximity})
+        #                 prev_proximity = cur_proximity
+        #             else:
+        #                 rollout.add({'rew': 0.0})
+        #         else:
+        #             rollout.add({'rew': rew})
+
+        #     # transition trajectory is ended
+        #     rollout.get()['term'][-1] = 1.0
+        #     if proximity_predictors:
+        #         if config.proximity_dense_diff_rew:
+        #             if config.proximity_dense_diff_rew_final_bonus:
+        #                 new_rew = cur_proximity
+        #             else:
+        #                 new_rew = 0
+        #         else:
+        #             new_rew = cur_proximity
+        #         rollout.get()['rew'][-1] += new_rew
+
+        # primitive policy
+        t_primitive = 0
+        if config.primitive_use_term:
+            primitive_pis[cur_primitive].is_terminate(ob, init=True, env=env)
+        while not done and (config.primitive_use_term or t_primitive < config.num_rollouts):
+            ac, vpred = primitive_pis[cur_primitive].act(ob, stochastic=False)
+
+            vob = render_frame(env, cur_ep_len, cur_ep_ret, config.rl_method, config.render,
+            config.record, caption_off=config.video_caption_off)
+
+            rollout.add({'ob': ob, 'vpred': vpred, 'ac': ac, 'is_trans': False,
+                         'cur_primitive': cur_primitive, 'prev_primitive': prev_primitive,
+                         'term': 0.0, 'visual_obs': vob})
+
+            ob, rew, done, info = env.step(ac)
+            for key, value in info.items():
+                reward_info[key].append(value)
+            rollout.add({'rew': rew, 'env_rew': rew, 'done': done})
+            if config.primitive_use_term:
+                rollout.add({'success': False})
+            else:
+                rollout.add({'success': info['success']})
+            cur_ep_ret += rew
+            cur_ep_len += 1
+            t_primitive += 1
+            t += 1
+
+            if config.primitive_use_term and primitive_pis[cur_primitive].is_terminate(ob, env=env) or \
+                    done and info['success']:
+                rollout.get()['success'][-1] = True
+                break
+
+
+        if done:
+            vob = render_frame(env, cur_ep_len, cur_ep_ret, config.rl_method, config.render, config.record, caption_off=config.video_caption_off)
+ 
+            rollout.add({'visual_obs': vob})
+            rollout.add({'ep_reward': cur_ep_ret, 'ep_length': cur_ep_len})
+            for key, value in reward_info.items():
+                if isinstance(value[0], (int, float)):
+                    if '_mean' in key:
+                        ep_reward[key].append(np.mean(value))
+                    else:
+                        ep_reward[key].append(np.sum(value))
+            reward_info = defaultdict(list)
+            cur_ep_ret = 0
+            cur_ep_len = 0
+            ob = env.reset()
+            done = False
+            #cur_primitive = -1
+
+            if not config.is_train:
+                dicti = rollout.get()
+                for key, value in ep_reward.items():
+                    dicti.update({"ep_{}".format(key): value})
+                yield {key: np.copy(val) for key, val in dicti.items()}
+                rollout.clear()
+                ep_reward = defaultdict(list)
+
+            if config.is_train and t >= config.num_rollouts:
+                dicti = rollout.get()
+                for key, value in ep_reward.items():
+                    dicti.update({"ep_{}".format(key): value})
+                yield {key: np.copy(val) for key, val in dicti.items()}
+                rollout.clear()
+                ep_reward = defaultdict(list)
+                t = 0
+
 def traj_segment_generator(env, meta_pi, primitive_pis, trans_pis, stochastic, config,
                            training_inference=False, proximity_predictors=None):
     t = 0
